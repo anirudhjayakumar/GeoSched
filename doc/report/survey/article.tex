@@ -1,0 +1,107 @@
+%  article.tex (Version 3.3, released 19 January 2008)
+%  Article to demonstrate format for SPIE Proceedings
+%  Special instructions are included in this file after the
+%  symbol %>>>>
+%  Numerous commands are commented out, but included to show how
+%  to effect various options, e.g., to print page numbers, etc.
+%  This LaTeX source file is composed for LaTeX2e.
+
+%  The following commands have been added in the SPIE class 
+%  file (spie.cls) and will not be understood in other classes:
+%  \supit{}, \authorinfo{}, \skiplinehalf, \keywords{}
+%  The bibliography style file is called spiebib.bst, 
+%  which replaces the standard style unstr.bst.  
+
+%%\documentclass[]{spie}  %>>> use for US letter paper
+\documentclass[12pt]{spie}  %>>> use this instead for A4 paper
+%%\documentclass[nocompress]{spie}  %>>> to avoid compression of citations
+%% \addtolength{\voffset}{9mm}   %>>> moves text field down
+%% \renewcommand{\baselinestretch}{1.65}   %>>> 1.65 for double spacing, 1.25 for 1.5 spacing 
+%  The following command loads a graphics package to include images 
+%  in the document. It may be necessary to specify a DVI driver option,
+%  e.g., [dvips], but that may be inappropriate for some LaTeX 
+%  installations. 
+\usepackage[]{graphicx}
+\usepackage[sort, numbers]{natbib}
+\title{GeoSched: Minimizing Cost of Cloud Workloads in Geo-Distributed Data Centers} 
+\author{Anirudh Jayakumar and Harshit Dokania \\
+University of Illinois at Urbana-Champaign \\
+\{ajayaku2,hdokani2\}@illinois.edu 
+}
+
+
+ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%>>>> uncomment following for page numbers
+% \pagestyle{plain}    
+%>>>> uncomment following to start page numbering at 301 
+%\setcounter{page}{301} 
+ 
+  \begin{document} 
+  \maketitle 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{abstract}
+Today, many of the leading cloud service providers have geographically distributed data centers to serve millions of users around the world. The need for a geo-distributed data center arising from the need to provide low-latency and  high-availability of the different services. The workloads that run on these data centers are also highly varied. A typical data centers run jobs of different kinds including business-critical workloads---web servers, mail servers, instant messaging services etc, big-data processing, real-time data analytics and HPC jobs. As cloud services grow to serve more customers, there is an increasing need for a workload provisioning mechanism which can minimize the cost of operation of the data center while still obeying the SLA and also minimizing the user-perceived latency. 
+
+We present GeoSched, a job provisioning framework that is workload aware, energy-aware and cooling-aware. GeoSched considers the workload type (batch process, real-time processing, web-service), the energy source of the data center (brown and green energy), electricity pricing of the region, cooling techniques used in the data center (air economizer) and also the history of jobs to predict the load patterns and cluster utilization. We wish to evaluate GeoSched on industry workload traces and also on synthetic workloads that can mimic the real-world data center workload. 
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related Work}
+\label{sec:intro}  % \label{} allows reference to this section
+Cost minimization has been extensively studied both in the context of a single data center and a geo-distributed data center. Most of the work has been targeted towards minimizing the energy consumption of the data center to reduce the operational cost. For example, the work by Gu et al. \cite{gu2014cost} studies the influence of task assignment, data placement  and data movement on the operational expenditure of large-scale geo-distributed data centers for big data applications. The authors jointly optimize  these three factors by proposing a 2-D Markov chain to derive the average task completion time and solve the model as a MILP problem. On similar lines Agarwal et al. \cite{agarwal2010volley} propose an automated data placement mechanism Volley for geo-distributed cloud services with the consideration of WAN bandwidth cost, data center capacity limits, data inter-dependencies, etc. 
+
+Yu et all.\cite{yu2015energy} propose minimizing energy cost for distributed Internet data centers (IDCs) in smart microgrids by considering system dynamics like uncertainties in electricity price, workload, renewable energy generation, and power outage state. They model the problem as a stochastic program and solve it using Lyapunov optimization technique. The work by Ren and He  \cite{ren2013coca} propose an online algorithm, called COCA to minimize data center operational cost while satisfying carbon neutrality. Unlike some of the existing research, COCA enables distributed server-level resource management: each server autonomously adjusts its processing speed and optimally decides the amount of workloads to process. This work is restricted to a single data center with heterogeneous resources. 
+
+Cooling energy is a substantial part of the total energy spent by a data center. According to some reports, this can be as high as 50\% \cite{sullivan2002alternating}, \cite{patel2003smart},\cite{sawyer2004calculating} of the total energy budget. There has been a lot of work both at the application/middleware level \cite{TempLDBSC11}, \cite{leverich2010energy} as well as provisioning techniques  \cite{tang2007thermal}, \cite{chen2010integrated} that try to minimize the cooling energy. Li et all. \cite{li2014coordinating} proposes SmartCool, a power optimization scheme that effectively coordinates different cooling techniques and dynamically manages workload allocation for jointly optimized cooling and server power. Unlike existing work that addresses different cooling techniques in an isolated manner, SmartCool integrates different cooling systems as a constrained optimization problem. Also, since geo-distributed data centers have different ambient temperatures, SmartCool dynamically dispatches the incoming requests among a network of data centers with heterogeneous cooling systems to best leverage the high efficiency of free cooling.  
+
+Other research related to cooling efficiency include the work by Liu et all \cite{liu2012renewable}  that reduces electricity cost and environmental impact using a holistic approach that integrates renewable supply, dynamic pricing, and cooling supply including chiller and outside air cooling, with IT workload planning to improve the overall sustainability of data center operations. The authors first predict renewable energy as well as IT demand. Then they use these predictions to generate an IT workload management plan that schedules IT workload and allocates IT resources within a data center according to time varying power supply and cooling efficiency. Pakbaznia and Pedram \cite{pakbaznia2009minimizing} focuses on minimizing power for both IT equipment and air conditioning power usage. The authors consider both server consolidation and task assignment together and formulate the resulting optimization problem a a ILP problem and present a heuristic algorithm that loves it in polynomial time.
+
+There are also research done to look at the impact of failures in data centers on the operational cost. The work by Cui et al. \cite{cui2014shadows} considers the increase in energy consumption due to failures in large scale clouds. A slower shadow replication of the main process is used to recover from faults thereby saving energy upto 30\%. Guenter et al. \cite{guenter2011managing} also considers different trade-offs between cost, performance and reliability to formulate an optimization problem that minimizes energy costs, reliability costs and unmet demands. VM migration techniques are also used extensively to increase the energy efficiency of cloud data centers. One such approach is proposed by Rodero et al. \cite{rodero2012energy} where the author  propose to use applications€™s profiling (CPU, memory, bandwidth) to  design application-centric energy-aware strategy for VM allocation during VM migration.
+
+Researchers have also studied the efficient use of green energy in data centers. Goiri et al. \cite{goiri2011greenslot} propose a system GreenSlot that maximizes the use of green energy available at data centers while ensuring all job deadlines are met. GreenSlot predicts the solar energy available in data centers in near future and schedules the workload to maximize green energy consumption and meeting jobs€™s deadlines. Green- Slot can increase green energy consumption by up to 117\% and decrease energy cost by up to 39\%, compared to a conventional scheduler. 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Problem Statement} 
+
+Minimize the total cost of operations of a geo-distributed data center running cloud workloads by minimizing the energy costs subject to business constraints like the service level agreement(SLA) and other technical constraints like data center capacity limits. The energy costs will depend on the power usage of the IT infrastructure and also the energy required by the cooling infrastructure to maintain the desired temperature inside the data center. Additionally, the solution should also consider the different energy source(green and brown) available at the data center and the different workload types that are typical to a cloud data center.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Approaches } 
+
+We wish to consider all the major factors that impact the energy costs at the data center. Some of the factors and its impact are discussed in the below sub-section.
+
+\subsection{Electricity pricing} 
+We use the day-ahead hourly electricity prices to get the electricity cost of the data center which will enable us to provision workloads efficiently. Moreover, the prices in the day-ahead market fluctuate smoothly and can be predicted using time series forecasting techniques.
+\subsection{Energy source in data centers}
+To meet the energy requirements of data centers there is increasing adoption of renewable energy supply techniques (solar, wind). This has resulted in data centers being powered at least partially with green energy. We wish to effectively use the green energy to reduce costs. 
+\subsection{Cooling techniques employed}
+The other second generation solution of energy efficient data center is the use of air economizers in data centers.An air-side economizer brings outside air into a building and distributes it to the servers. This can lead to a significant savings in cooling energy of the data center. 
+
+We will study each of these factor individually and look at their impact on the cost. Based on this, we will devise an appropriate optimization technique which will minimize the energy cost while obeying all the constraints.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Expected Milestones} 
+
+ \subsection{Study real-time and synthetic workloads} We have started studying workloads traces for google cluster-data which provides traces from a 12k-machine cell for one month duration in May 2011. This process is challenging because task-IDs, job-IDs are obfuscated for security reasons. Resources utilization such as CPU and memory has been normalized with the maximum resource usage. We are also studying synthetic workloads that are generated by sampling historical MapReduce cluster traces. Tentatively we would complete this by 10\textsuperscript{th}March,2015.
+ \subsection{Data Center profile}In this process we will note the data center specific parameters such as electricity cost, available energy, economizer, cooling energy that is useful for simulating geo-replicated data centers.We would complete this by 20\textsuperscript{th}March,2015.
+\subsection{Feature Extraction} This phase will be identifying all the necessary features that contribute to the energy cost. These features will be used in the optimization of the energy cost. We aim to complete this by 5\textsuperscript{th}April,2015.
+ \subsection{Implementing Optimization technique} This is the most critical component and expected to consume major part of project. We will be building optimization techniques which is adaptive to workload characteristics and data center's resource capacity and electricity costs.We aim to complete this by 25\textsuperscript{th}April,2015.
+\subsection{Evaluation} This phase we will be simulating data centers with previously gathered data center profile and using the optimization technique mentioned above.We aim to complete this by 7\textsuperscript{th}May,2015.
+  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\bibliography{report}   %>>>> bibliography data in report.bib
+\bibliographystyle{spiebib}   %>>>> makes bibtex use spiebib.bst
+
+\end{document} 
