@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GeoSched>
+<!-- This is the current format. Some of these fields will be 
+replaced with more elaborate fields -->
+	<TraceFormat id='0' name="google-custom">
+		<Column id='0' name='JobID' type='INTEGER' />
+		<Column id='1' name='Arrival Time' type='INTEGER' />
+		<Column id='2' name='Scheduled Time' type='INTEGER' />
+		<Column id='3' name='Finish Time' type='INTEGER' />
+		<Column id='4' name='Schedule class' type='INTEGER' />
+		<Column id='5' name='Tasks' type='INTEGER' />
+		<Column id='6' name='Total CPU' type='FLOAT' /> 
+		<!-- aggregate sum for all tasks -->
+		<Column id='7' name='Total Memory' type='FLOAT' /> 
+		<!-- aggregate sum for all tasks -->
+		<Column id='8' name='User' type='STRING' />
+		<Column id='9' name='SLA Param1' type='FLOAT' />
+		<Column id='10' name='SLA Param2' type='FLOAT' />
+		<Column id='11' name='SLA Param3' type='FLOAT' />
+	</TraceFormat>
+</GeoSched>
