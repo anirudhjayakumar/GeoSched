@@ -1,0 +1,4 @@
+USAF-WBAN_ID STATION NAME                   COUNTRY                                            STATE 			      LATITUDE LONGITUDE ELEVATION
+------------ ------------------------------ -------------------------------------------------- ------------------------------ -------- --------- ---------
+723067 93726 KINSTON REGIONAL JETPORT AT ST UNITED STATES                                      NORTH CAROLINA                  +35.317  -077.633   +0028.7
+723067 99999 KINSTON RGNL JETPORT           UNITED STATES                                      NORTH CAROLINA                  +35.332  -077.609   +0029.0
