@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>GoogleTraceClean</name>
+	<name>GoogleTrace</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -28,7 +28,13 @@
 		<link>
 			<name>includes</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/includes</locationURI>
+			<locationURI>copy_PARENT/includes</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-1-PROJECT_LOC%7D/GeoSched/src</value>
+		</variable>
+	</variableList>
 </projectDescription>

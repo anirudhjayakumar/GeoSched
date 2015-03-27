@@ -4,15 +4,24 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../GoogleTrace.cpp \
 ../JobEvent.cpp \
+../TaskEvent.cpp \
+../common.cpp \
 ../main.cpp 
 
 OBJS += \
+./GoogleTrace.o \
 ./JobEvent.o \
+./TaskEvent.o \
+./common.o \
 ./main.o 
 
 CPP_DEPS += \
+./GoogleTrace.d \
 ./JobEvent.d \
+./TaskEvent.d \
+./common.d \
 ./main.d 
 
 

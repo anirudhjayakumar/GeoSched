@@ -28,7 +28,7 @@ int JobEvent::Initialize(const std::string &filePath)
 	{
 		fileStream >> sLine;
 		vTokens.clear();
-		Utils::split(sLine,',',vTokens);
+		Utils::Tokenize(sLine,',',vTokens);
 		char *pEnd;
 		vTimeStamp.push_back(strtoll(vTokens[TIMESTAMP].c_str(),&pEnd,10));
 		vJobID.push_back(strtoll(vTokens[JOBID].c_str(),&pEnd,10));
