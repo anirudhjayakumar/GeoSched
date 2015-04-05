@@ -30,10 +30,10 @@
 \usepackage[margin=0.5in]{geometry}
 
 \title{GeoSched: Minimizing Cost of Cloud Workloads in Geo-Distributed Data Centers} 
-\author{Anirudh Jayakumar and Harshit Dokania \\
-University of Illinois at Urbana-Champaign \\
-\{ajayaku2,hdokani2\}@illinois.edu 
-}
+%\author{Anirudh Jayakumar and Harshit Dokania \\
+%University of Illinois at Urbana-Champaign 
+%\{ajayaku2,hdokani2\}@illinois.edu 
+%}
 
 \newenvironment{list1}{
   \begin{list}{\ding{113}}{%
@@ -182,15 +182,29 @@ In google workload trace, it is tough to study the resource usage since these va
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Data Center Profiling } \label{sec:datacenter}
-
-Provide some introduction about out profiling stratergy
-
+\section{Data Center Profiling } 
+Google data-centers show 50\% less energy consumption than a typical data center. Google is able to achieve a trailing twelve-month (TTM) PUE of 1.12 across all data centers, in all seasons, including all sources of overhead. These data-centers have varied characteristics over time, which will be discussed in detail in this section.  
 \subsection{Geo-Distributed Data Center}
-
+We have chosen to simulate Google data centers that do the work for us around the world, around the clock at five different locations. These consists of two of them in United States namely Berkeley County, South Carolina and Lenoir, North Carolina. Other data centers that we have simulated are located one each in Europe, Asia, and South ?America. 
 \subsection{Profile Parameters}
+There are five techniques that Google typically uses to minimize its energy consumption and electricity costs. Frequent measuring of Power Usage Effectiveness is the key for determining the power usage for non-computing functions like cooling and power distribution. Secondly they manage airflow at data-centers, which allows cooling the hot spots available in data-centers. Moreover by setting thermostat to 80$^{\circ}$F it saves significant amount of electricity consumption and costs. Google researchers propose maximum usage of ambient temperature through evaporative cooling, cold reservoir, and airside economizer. This discards conventional chillers, which are the source of maximum energy consumption at data centers.  Altogether Google data continuously draw almost 260 million watts, which is about a quarter of the output of a nuclear power plant. Google uses renewable energy to power more than 35\% of its operations. These are wind, solar energy typically available at all data centers.
+
+Google results show that data centers incur high PUE during summer and low PUE during winters. It clearly shows that surrounding temperature plays a critical role in deciding energy consumption at data centers. Data centers typically purchase wholesale electricity where the price is determined by day ahead market. 
+\begin{figure} %
+    \centering
+    \subfloat[Daily Average Temperature ]{{\includegraphics[width=9cm]{AverageTemp} }}%
+    \subfloat[Daily Maximum Variation]{{\includegraphics[width=9cm]{Variation} }}%
+    \caption{Temperature variation for the year 2013}%
+    \label{fig:temp}%
+\end{figure}
+
 \subsubsection{Temperature}
+We use temperature as a key parameter to decide the location of job, as temperatures are diverse across data centers and encounters frequent fluctuations in temperature. In this case we make our assumption concrete by doing an empirical analysis of historical climate data, which provides substantial evidence. We extracted these historical climate data from various data repositories of the National Climate Data Center for all five locations covering the entire one-year period of 2013.
+
+Figure \ref{fig:temp} a plots the daily average temperature for five different locations in United States, Europe, South-America, and Asia. As expected we see high diversity in temperature at different locations. For example, North Carolina, Ireland seems to be equally favorable for cooling during the month of November {-} March. Chile and Singapore show almost no variation in temperature across the year. However, Chile is favorable for cooling conditions compared to other data centers in the month of May {-} July. 
+
+Figure \ref{fig:temp} b plots the daily maximum variation in temperature across the day i.e. difference of maximum temperature and minimum temperature in a day.  It is worth noting that almost every location faces a variation of up to 40$^{\circ}$F during different periods. These highs and lows do not occur at the same time across different regions due to time differences. It is evident from the results that there is no single location that is always cooling efficient. So we conclude that we need a dynamic scheduler, which caters to the locations that have lower temperature and henceforth save overall energy costs.
+
 \subsubsection{Electricity Pricing}
 \subsubsection{Energy Source}
 
