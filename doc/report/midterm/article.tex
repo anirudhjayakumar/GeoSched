@@ -13,7 +13,7 @@
 %  which replaces the standard style unstr.bst.  
 
 %%\documentclass[]{spie}  %>>> use for US letter paper
-\documentclass[a4paper,12pt]{spie}  %>>> use this instead for A4 paper
+\documentclass[a4papert,12pt]{spie}  %>>> use this instead for A4 paper
 %%\documentclass[nocompress]{spie}  %>>> to avoid compression of citations
 %% \addtolength{\voffset}{9mm}   %>>> moves text field down
 %% \renewcommand{\baselinestretch}{1.65}   %>>> 1.65 for double spacing, 1.25 for 1.5 spacing 
@@ -60,9 +60,9 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \begin{abstract}
-Today, many of the leading cloud service providers have geographically distributed data centers to serve millions of users around the world. The need for a geo-distributed data center arising from the need to provide low-latency and  high-availability of the different services. The workloads that run on these data centers are also highly varied. A typical data centers run jobs of different kinds including business-critical workloads---web servers, mail servers, instant messaging services etc, big-data processing, real-time data analytics and HPC jobs. As cloud services grow to serve more customers, there is an increasing need for a workload provisioning mechanism which can minimize the cost of operation of the data center while still obeying the SLA and also minimizing the user-perceived latency. 
+Today, many of the leading cloud service providers have geographically distributed data centers to serve millions of users around the world. The need for a geo-distributed data center arises from the need to provide low-latency and  high-availability of the different services. The workloads that run on these data centers are also highly diverse. A typical data centers run jobs of different kinds including business-critical workloads---web servers, mail servers, instant messaging services etc, big-data processing, real-time data analytics and HPC jobs. As cloud services grow to serve more customers, there is an increasing need for a workload provisioning mechanism which can minimize the cost of operation of the data center while minimizing SLA violations and also minimizing the user-perceived latency. 
 
-We present GeoSched, a job provisioning framework that is workload aware, energy-aware and cooling-aware. GeoSched considers the workload type (batch process, real-time processing, web-service), the energy source of the data center (brown and green energy), electricity pricing of the region, cooling techniques used in the data center (air economizer) and also the history of jobs to predict the load patterns and cluster utilization. We wish to evaluate GeoSched on industry workload traces and also on synthetic workloads that can mimic the real-world data center workload. 
+We present GeoSched, a job provisioning framework that is workload aware, energy-aware and cooling-aware. GeoSched considers the workload type (batch process, real-time processing, web-service), the energy source of the data center (brown and green energy), electricity pricing of the region and cooling techniques used in the data center (air economizer). We GeoSched on industry workload traces and also on synthetic workloads that can mimic the real-world data center workload. 
 \end{abstract}
 
 
@@ -95,16 +95,16 @@ Minimize the total cost of operations of a geo-distributed data center running c
 \fi
 
 \section{Cloud Workload } 
-With the increase in the adoption of cloud computing by businesses around the world, more and more workloads are moving out of traditional data centers into the cloud. A cloud data center typically handles a range of IT workloads. These workloads include service-critical and latency sensitive interactive applications that run 24x7 such as instant messengers, e-mail applications and other internet services, and batch-style applications such as scientific HPC applications, BigData applications like financial analysis and MapReduce applications. A thoughtful management of these workloads are necessary not only to provide customers with low-latency services but also to reduce the energy consumption of the data centers that run these workloads. A good way to study these workloads are by analyzing real-world or synthetic workload traces. We look at workload traces in detail in section \ref{traces} and \ref{googletrace}
+With the increase in the adoption of cloud computing by businesses around the world, more and more workloads are moving out of traditional data centers into the cloud. A cloud data center typically handles a range of IT workloads. These workloads include service-critical and latency sensitive interactive applications that run 24x7 such as instant messengers, e-mail applications and other internet services, and batch-style applications such as scientific HPC applications, BigData applications like financial analysis and MapReduce applications. A thoughtful management of these workloads are necessary not only to provide customers with low-latency services but also to reduce the energy consumption of the data centers that run these workloads. A good way to study these workloads are by analyzing real-world or synthetic workload traces. We look at cloud workload traces in detail in section \ref{traces} and \ref{googletrace}
 
 \subsection{Workload Traces} \label{traces}
-Unfortunately, there is a lack of real-world traces in the cloud computing research community. As a result, there are limited work done to understand the diversity in cloud workloads. The first large-scale workload trace was released by Google in 2011\cite{googletracedata}, featuring traces from over 12,000 servers over a period of 29 days. Various studies have been carried out to understand the characteristic of the Google trace data. Other real-world traces include Wikipedia request trace \cite{urdaneta2009wikipedia} and Hadoop logs from Yahoo! \cite{yahootrace}There have also been attempts to generate synthetic workload traces using known real-world workload characteristics \cite{beitch2010rain} \cite{wang2011towards}. For the sake of this work, we have decided to use the workload trace from Google. 
+Unfortunately, there is a lack of real-world traces in the cloud computing research community. As a result, there are limited work done to understand the diversity in cloud workloads. The first large-scale workload trace was released by Google in 2011\cite{googletracedata}, featuring traces from over 12,000 servers over a period of 29 days. Various studies have been carried out to understand the characteristic of the Google trace data. Other real-world traces include Wikipedia request trace \cite{urdaneta2009wikipedia} and Hadoop logs from Yahoo! \cite{yahootrace}There have also been attempts to generate synthetic workload traces using known real-world workload characteristics \cite{beitch2010rain} \cite{wang2011towards}. For our experiments we have decided to use the workload trace from Google. 
 
 \subsection{Custom Trace Format}
 To have a common trace format to represent different real-world and synthetic workload traces, we have formulated a trace format similar to standard workload format (swf) \cite{chapin1999benchmarks} defined for grid and supercomputing traces. Table \ref{tab:format} provides information about each field int the trace format.
  
 \begin {table}[ht]
-\caption {Trace format description} \label{tab:format} 
+\centering
  \scalebox{0.9}{\begin{tabular}{ | p{4cm} |l  |p{11 cm}|  }
     \hline
     \bf{Field Name} & \bf{Type} & \bf{Description}   \\ \hline
@@ -121,10 +121,11 @@ To have a common trace format to represent different real-world and synthetic wo
      SLA Param2&  FLOAT & SLA parameter placeholder\\ \hline
      SLA Param3&  FLOAT & SLA parameter placeholder\\ \hline
     \end{tabular}}
+    \caption {Trace format description} \label{tab:format} 
 \end{table}
 
 \subsection{Google Workload Trace} \label{googletrace}
-Google trace has job and task information in different files. We consolidated all the required information and generated a single work trace file with the format described in the previous section. For our work, we model five different data centers located at different parts of the globe. A detailed explanation about the data center profile are given in section \ref{sec:datacenter}. To simulate workload execution in these five data centers we have extracted five set of traces each worth five days of incoming workload from the original google trace. So, this covers 25 days of traces out of the 29 available days. We label these 5 set of traces from A to E. Additionally, in our experiments we wish to only consider those jobs that end without any failures. Therefore, we clean the original traces by removing all jobs that is either failed or get killed. 
+Google trace has job and task information in different files. We consolidated all the required information and generated a single work trace file with the format described in the previous section. For our work, we model five different data centers located at different parts of the globe. A detailed explanation about the data center profile are given in section \ref{sec:datacenter}. To simulate workload execution in these five data centers we have extracted five set of traces each worth five days of incoming job requests from the original google trace. This will cover 25 days of traces out of the 29 available days. We label these 5 set of traces from A to E. Additionally, in our experiments we only consider those jobs that end without any failures. Therefore, we clean the original traces by removing all jobs that is either fail or get killed. 
 
 \begin{figure}[ht] 
 \centering
@@ -133,7 +134,7 @@ Google trace has job and task information in different files. We consolidated al
 \label{fig:arrivalrate}
 \end{figure}
 
-Now we will look at some characteristics of the traces. Table \ref{tab:tracestat} describes the statistics for each of the five traces grouped by the scheduling class of the job. In google traces, CPU and memory usage are normalized relative to the largest capacity of the resource on any machine in the trace (which is 1.0). Most of the class 0 and class 2 jobs are batch jobs with less latency requirements. Generally, these are the kind of jobs that can be provisioned on other data centers as their deadlines are not strict.  You will find that as the sensitivity increases the running time of these jobs also increase. High-sensitive jobs are generally service jobs and run of longer periods of time. Figure \ref{fig:pie} shows a pie chart of the job counts in different schedule classes for all the 5 traces. You will notice that the job count for class 3 (high latency-sensitivity) jobs are low. This is because these jobs generally run for long period of time, typically months. Since we only consider jobs that start and end within the 29 day range such jobs are missed out in our traces. For our work, we will consider class-0 and class-1 jobs as candidates for optimizing the provisioning. We leave, class-2 and class-3 jobs to run on the data center where the job arrived since these are high-sensitive and their SLA demands will be strict.
+Now we will look at some characteristics of the traces. Table \ref{tab:tracestat} describes the statistics for each of the five traces grouped by the scheduling class of the job. In google traces, CPU and memory usage are normalized relative to the largest capacity of the resource on any machine in the trace (which is 1.0). Most of the class 0 and class 2 jobs are batch jobs with less latency requirements. Generally, these are the kind of jobs that can be provisioned on other data centers as their deadlines are not strict.  You will find that as the sensitivity increases the running time of these jobs and the resource usage also increase. High-sensitive jobs are generally service jobs and run of longer periods of time. Figure \ref{fig:pie} shows a pie chart of the job counts in different schedule classes for all the 5 traces. You will notice that the job count for class 3 (high latency-sensitive) jobs are low. This is because these jobs generally run for long period of time, typically months. Since we only consider jobs that start and end within the 29 day range such jobs are missed out in our traces. For our work, we will consider class-0 and class-1 jobs as candidates for optimizing the provisioning. We leave, class-2 and class-3 jobs to run on the data center where the job arrived since these are high-sensitive and their SLA demands will be strict.
 
 
 \begin{figure}[]
@@ -144,7 +145,6 @@ Now we will look at some characteristics of the traces. Table \ref{tab:tracestat
 \end{figure}
 
 \begin{table}
-\caption {Trace set statistics} \label{tab:tracestat} 
 \adjustbox{max width=1\textwidth}{
 
 \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|}
@@ -157,11 +157,12 @@ Now we will look at some characteristics of the traces. Table \ref{tab:tracestat
 3 & 0.088 & 0.12 & 1105 & 0.099 & 0.12 & 82 & 0.101 & 0.012 & 7961 & 0.081 & 0.051 & 17135 & 0.089 & 0.061 & 9021 \\ \hline
 \end{tabular}
 }
+\caption {Trace set statistics} \label{tab:tracestat} 
 \end{table}
 
-Figure \ref{fig:arrivalrate} shows the variation in job arrival for the traces. As you can see there is both intra-trace variation as well as inter-trace variation. This is representative of the real-world cloud workload pattern where bursty arrivals are common. There are opportunities to provision jobs to other data centers if the traffic at a particular data center is high. What is also important to notice is that the scheduling decision should be made quickly when the arrival rates of jobs are high, else there are chances for these jobs to miss the SLA. Hence, even the scheduler should be scalable during high volume traffic. 
+Figure \ref{fig:arrivalrate} shows the variation in job arrival rates for the traces. As you can see there is both intra-trace variation as well as inter-trace variation. This is representative of the real-world cloud workload pattern where bursty arrivals are common. There are opportunities to provision jobs to other data centers if the traffic at a particular data center is high. What is also important to notice is that the scheduling decision should be made quickly when the arrival rates of jobs are high, else there are chances for that these jobs miss the SLAs. Hence, even the scheduler should be scalable during high volume traffic. 
 
-Figure \ref{fig:runtime} shows the CDF of the job runtime. As you can see most of the jobs have runtime less than 1024 seconds. This pattern is consistent for all the trace sets. There are a few jobs that have higher run-times. As explained earlier, these jobs are primarily internet-service jobs that run for months. 
+Figure \ref{fig:runtime} shows the CDF of the job runtime. As you can see most of the jobs have runtime less than 1024 seconds. This pattern is consistent for all the trace sets. There are a few jobs that have higher run-times. As explained earlier, these jobs are primarily internet-service jobs that are expected to run for longer duration. 
 
 
 \begin{figure}[] 
@@ -184,19 +185,44 @@ In google workload trace, it is tough to study the resource usage since these va
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Center Profiling } \label{sec:datacenter}
 In order to run our experiments, we need to collect information about data centers that will help us make better scheduling decisions. We call this process data center profiling. The major energy costs in data center are from running the IT resources and from cooling the data centers. We create a profile for each of the data center with the information that effects the energy costs.
-\subsection{Geo-Distributed Data Center}
-Most cloud service providers including Google, Amazon, Facebook and Apple have data centers distributed across the globe. For our experiments, we consider five locations where Google has its data centers\cite{googledatacenter}. Table \ref{tab:datacenter} provides the location and labels for each of the data center.
 
-\begin{table}[ht] \label{tab:datacenter}
-\begin{tabular}{lll}
-Location & Label & Associated Trace \\
-Berkeley County, South Carolina & DC1 & A \\
-Lenoir, North Carolina & DC2 & B \\
-Singapore & DC3 & C \\
-Quilicura, Chile & DC4 & D \\
-Dublin, Ireland & DC5 & 
+\begin{table}[h] 
+ \centering
+\begin{tabular}{|l|l|l|}
+\hline
+\bf{Location}                        & \bf{Label} & \bf{Associated Trace} \\ \hline
+Berkeley County, South Carolina & DC1   & A                \\ \hline
+Lenoir, North Carolina          & DC2   & B                \\ \hline
+Singapore                       & DC3   & C                \\ \hline
+Quilicura, Chile                & DC4   & D                \\ \hline
+Dublin, Ireland                 & DC5   &   E               \\ \hline
 \end{tabular}
+\caption {Data center location information} \label{tab:dc}
 \end{table}
+
+\subsection{Geo-Distributed Data Center}
+Most cloud service providers including Google, Amazon, Facebook and Apple have data centers distributed across the globe. For our experiments, we consider five locations where Google has its data centers\cite{googletracedata}. Table \ref{tab:dc} provides the location and labels for each of the data center. We also replicate the computing resource used in the original google trace across all the data centers. The configuration of the resources along with the normalzed CPU and memory are given in table \ref{tab:dcres}
+
+\begin{table}[h] 
+ \centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\bf{Node count}      &       \bf{Architecture}          & \bf{CPU} & \bf{Memory} \\ \hline
+6732 & B & 0.5 & 0.50   \\ \hline
+3863 & B & 0.5 & 0.25   \\ \hline
+1001 & B & 0.5 & 0.75   \\ \hline
+795 & C & 1 & 1   \\ \hline
+126 & A & 0.25 & 0.25   \\ \hline
+52 & B & 0.5 & 0.12  \\ \hline
+5 & B & 0.5 & 0.3  \\ \hline
+5 & B & 0.5 & 0.97  \\ \hline
+3 & C & 1 & 0.50  \\ \hline
+1 & B & 0.5 & 0.06  \\ \hline
+\end{tabular}
+\caption {Data center IT resource configuration} \label{tab:dcres}
+\end{table}
+
+
 
 \subsection{Profile Parameters}
 We consider two major parameters that has the most effect on the energy cost. They are a) Temperature b) Electricity. We collect temperature and electricity prices for these locations from historical archives. If time permits, we wish to also consider green energy available at the data center locations. We look at each of these parameters and how they effect energy costs in sections \ref{sec:temp}, \ref{sec:elec} and \ref{sec:green}.
@@ -210,52 +236,73 @@ We consider two major parameters that has the most effect on the energy cost. Th
     \label{fig:temp}%
 \end{figure}
 
-\subsubsection{Temperature} {sec:temp}
-Data centers located in cold regions have the advantage of using outside air to cool the data center. An air-side economizer brings outside air into a building and distributes it to the servers. Instead of being re-circulated and cooled, the exhaust air from the servers is simply directed outside. This can result in million dollars of saving annually. A difference in temperature across data centers mean different calling costs at these data centers. We wish to utilize this difference by scheduling jobs in low temperature data centers. In this case we make our assumption concrete by doing an empirical analysis of historical climate data. We extracted these historical climate data from various data repositories of the National Climate Data Center \cite{cdc} for all five locations covering the entire one-year period of 2013.
+\subsubsection{Temperature} \label{sec:temp}
+Data centers located in cold regions have the advantage of using outside air to cool the data center. An air-side economizer brings outside air into a building and distributes it to the servers. Instead of being re-circulated and cooled, the exhaust air from the servers is simply directed outside. This can result in million dollars of saving annually. A difference in temperature across data centers mean different cooling costs at these data centers. We wish to utilize this difference by scheduling jobs in low temperature data centers. In this case we make our assumption concrete by doing an empirical analysis of historical climate data. We extracted these historical climate data from various data repositories of the National Climate Data Center \cite{climatedata} for all five locations covering the entire one-year period of 2013.
 
 Figure \ref{fig:temp} a plots the daily average temperature for five different locations in United States, Europe, South-America, and Asia. As expected we see high diversity in temperature at different locations. For example, North Carolina, Ireland seems to be equally favorable for cooling during the month of November {-} March. Chile and Singapore show almost no variation in temperature across the year. However, Chile is favorable for cooling conditions compared to other data centers in the month of May {-} July. 
 
 Figure \ref{fig:temp} b plots the daily maximum variation in temperature across the day i.e. difference of maximum temperature and minimum temperature in a day.  It is worth noting that almost every location faces a variation of up to 40$^{\circ}$F during different periods. These highs and lows do not occur at the same time across different regions due to time differences. It is evident from the results that there is no single location that is always cooling efficient. So we conclude that we need a dynamic scheduler, which caters to the locations that have lower temperature and henceforth save overall energy costs.
 
-\subsubsection{Electricity Pricing} {sec:elec}
-Creation of power trading zones have resulted in wholesale power purchase under dynamic pricing schemes. Such markets are popular in USA \cite{elecusa}, Germany \cite{elecgermany} and other countries. Based on supply and demand bids these there can be high fluctuations in prices \cite{benini2002day}. There are many ways to predict there prices \cite{contreras2003arima} \cite{garcia2005garch}. If we can predict the electricity prices for the job duration, then we will be able to schedule the job such that the running costs go down.
+\subsubsection{Electricity Pricing} \label{sec:elec}
+Creation of power trading zones have resulted in wholesale power purchase under dynamic pricing schemes. Such markets are popular in USA \cite{elecusa}, Germany \cite{elecgermany} and other countries. Based on supply and demand bids there can be high fluctuations in prices \cite{benini2002day}. There are many ways to predict these prices \cite{contreras2003arima} \cite{garcia2005garch}. If we can predict the electricity prices for the job duration, then we will be able to schedule the job such that the running costs go down.
 
-\subsubsection{Energy Source} {sec:green}
+\subsubsection{Energy Source} \label{sec:green}
 Solar and wind energy are available in most of the modern data centers. Similar to electricity price predictions green energy prediction can also be done \cite{goiri2012greenhadoop} \cite{aksanli2012utilizing}. Since, this part is in exploratory stage, we will provide more information during the final report.
 
-\subsubsection{Case Study: Google Data Centers} {sec:CSgoogle}
+\subsubsection{Case Study: Google Data Centers} \label{sec:CSgoogle}
 Google data-centers show 50\% less energy consumption than a typical data center. Google is able to achieve a trailing twelve-month (TTM) PUE of 1.12 across all data centers, in all seasons, including all sources of overhead.
 There are five techniques that Google typically uses to minimize its energy consumption and electricity costs. Frequent measuring of Power Usage Effectiveness is the key for determining the power usage for non-computing functions like cooling and power distribution. Secondly they manage airflow at data-centers, which allows cooling the hot spots available in data-centers. Moreover by setting thermostat to 80$^{\circ}$F it saves significant amount of electricity consumption and costs.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Scheduler simulator} 
+We plan to implement our simulator using CloudSim \cite{calheiros2011cloudsim}. CloudSim is an extensible simulation toolkit that enables modeling and simulation of Cloud computing systems and application provisioning environments. The CloudSim toolkit supports both system and behavior modeling of Cloud system components such as data centers, virtual machines (VMs) and resource provisioning policies.
+\subsection{Components}
+\begin{list2} %Job Description%
+\item \textbf{Datacenter:} This component will simulate a data center. This composed of 1) scheduler that implements a specific provisioning algorithm, 2) data center profile database, 3) a work trace reader and 4)proxy elements of other data center for inter-data center communication\
+\item \textbf{DataCenter Proxy}: All interactions with the data center will be through a proxy. Each datacenter will hold the proxies to other data centers.\
+\item \textbf{Scheduler:} This component will implement the optimization technique and schedule jobs onto data centers.\
+\item \textbf{Datacenter Profile DB}: This components contains the temperature and electricity data. Scheduler will access this to make provisioning decisions.\
+\end{list2}
+
+\begin{figure}[] 
+\centering
+\includegraphics[scale=0.60]{component}
+\caption{Simulation components and their interaction}
+\label{fig:component}
+\end{figure}
+
+\subsubsection{Component Interaction}
+Figure \ref{fig:component} gives the interaction model between the components. The datacenter object will start a thread which will run the scheduling algorithm, scheduling jobs from the trace file. Each data center had proxies to other data centers if it needs to communicate resource availability or job provisioning to other data centers.
+
+\section{Conclusion}
+We have completed the work trace analysis and data center profiling parts of the project. Currently the simulator is being implemented, following which we will work on the energy minimization techniques and the final evaluation of these techniques. If time permits, we would also like to consider green energy in our provisioning mechanism. Section \ref{sec:mile} shows the current state sand future directions of the project. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\iffalse
+\section{Scheduling Algorithm} 
 
 Provide basic idea about our strategy
 
-\subsection{Architecture}
-Introduce cloudsim
-\subsubsection{Components}
-\subsubsection{Integration of traces and data center profile}
-\subsubsection{Design}
+\subsection{Features considered}
+\subsubsection{Energy Cost Model}
+%\subsubsection{Optimization Techiques}
+%\subsubsection{Design}
+\fi
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-\section{ Milestones} 
-
-    \begin{tabular}{ | p{4cm} |l  |p{11 cm}|  }
+\section{ Milestones} \label{sec:mile}
+\adjustbox{max width=1\textwidth}{
+    \begin{tabular}{ | p{4cm} |l  |p{11 cm}| l |  }
     \hline
-    \bf{Item} & \bf{Deadline} & \bf{Description}   \\ \hline
-    Study real-world and synthetic workloads & 10\textsuperscript{th} March  & We have started studying workloads traces for google cluster-data which provides traces from a 12k-machine cell for one month duration in May 2011.  \\ \hline
-    Data Center profile & 20\textsuperscript{th} March  & In this process we will note the data center specific parameters such as electricity cost, available energy, economizer, cooling energy that is useful for simulating geo-distributed data centers. \\ \hline
-    Simulator design and implementation& 12\textsuperscript{th} April  & Implement the simulator infrastructure for multi-datacenter environment.  \\ \hline
-    Feature Extraction and Optimization & 25\textsuperscript{th} April  & Here we identifying all the necessary features that contribute to the energy cost  and build an optimization technique which is adaptive to workload characteristics and data center's resource capacity and electricity costs \\ \hline
-    Evaluation & 7\textsuperscript{th} May  & This phase we will be simulating data centers with previously gathered data center profile and using the optimization technique mentioned above \\ \hline
+    \bf{Item} & \bf{Deadline} & \bf{Description}  &  \bf{Status} \\ \hline
+    Study real-world and synthetic workloads & 10\textsuperscript{th} March  & We have started studying workloads traces for google cluster-data which provides traces from a 12k-machine cell for one month duration in May 2011. & Completed  \\ \hline
+    Data Center profile & 20\textsuperscript{th} March  & In this process we will note the data center specific parameters such as electricity cost, available energy, economizer, cooling energy that is useful for simulating geo-distributed data centers. & Completed\\ \hline
+    Simulator design and implementation& 12\textsuperscript{th} April  & Implement the simulator infrastructure for multi-datacenter environment.  & In progress \\ \hline
+    Feature Extraction and Optimization & 25\textsuperscript{th} April  & Here we identifying all the necessary features that contribute to the energy cost  and build an optimization technique which is adaptive to workload characteristics and data center's resource capacity and electricity costs & TBD \\ \hline
+    Evaluation & 7\textsuperscript{th} May  & This phase we will be simulating data centers with previously gathered data center profile and using the optimization technique mentioned above & TBD \\ \hline
     
     \end{tabular}
-
-
+}
   
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
