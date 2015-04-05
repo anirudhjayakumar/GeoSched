@@ -9,45 +9,48 @@ Warning--empty title in yu2015energy
 Warning--empty volume in yu2015energy
 Warning--empty volume in sullivan2002alternating
 Warning--empty volume in sawyer2004calculating
-You've used 18 entries,
+Warning--empty year in googletracedata
+Warning--empty year in yahootrace
+Warning--empty volume in beitch2010rain
+You've used 20 entries,
             1993 wiz_defined-function locations,
-            604 strings with 7694 characters,
-and the built_in function-call counts, 4839 in all, are:
-= -- 412
-> -- 237
+            614 strings with 7912 characters,
+and the built_in function-call counts, 4912 in all, are:
+= -- 424
+> -- 236
 < -- 0
-+ -- 86
-- -- 68
-* -- 439
-:= -- 666
-add.period$ -- 18
-call.type$ -- 18
-change.case$ -- 18
++ -- 87
+- -- 67
+* -- 437
+:= -- 679
+add.period$ -- 22
+call.type$ -- 20
+change.case$ -- 20
 chr.to.int$ -- 0
-cite$ -- 24
-duplicate$ -- 223
-empty$ -- 475
-format.name$ -- 68
-if$ -- 1149
+cite$ -- 29
+duplicate$ -- 217
+empty$ -- 488
+format.name$ -- 67
+if$ -- 1170
 int.to.chr$ -- 0
-int.to.str$ -- 18
+int.to.str$ -- 20
 missing$ -- 18
-newline$ -- 57
+newline$ -- 65
 num.names$ -- 18
-pop$ -- 67
+pop$ -- 75
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 148
+skip$ -- 144
 stack$ -- 0
-substring$ -- 288
-swap$ -- 97
+substring$ -- 270
+swap$ -- 91
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
-warning$ -- 6
+warning$ -- 9
 while$ -- 47
-width$ -- 20
-write$ -- 153
-(There were 6 warnings)
+width$ -- 22
+write$ -- 169
+(There were 9 warnings)

@@ -64,41 +64,50 @@ Li, L., ``Coordinating liquid and free air cooling with workload allocation for
   Autonomic Computing (ICAC 14)}{\nolinebreak\hspace{0.1em}]},  USENIX
   Association (2014).
 
-\bibitem{liu2012renewable}
-Liu, Z., Chen, Y., Bash, C., Wierman, A., Gmach, D., Wang, Z., Marwah, M., and
-  Hyser, C., ``Renewable and cooling aware workload management for sustainable
-  data centers,'' in [{\em ACM SIGMETRICS Performance Evaluation
-  Review}{\nolinebreak\hspace{0.1em}]},   {\bf 40}(1),  175--186, ACM (2012).
+\bibitem{googletracedata}
+``Google cluster data.'' \url{https://code.google.com/p/googleclusterdata/}.
+\newblock Accessed: 2015-3-30.
 
-\bibitem{pakbaznia2009minimizing}
-Pakbaznia, E. and Pedram, M., ``Minimizing data center cooling and server power
-  costs,'' in [{\em Proceedings of the 2009 ACM/IEEE international symposium on
-  Low power electronics and design}{\nolinebreak\hspace{0.1em}]},   145--150,
-  ACM (2009).
+\bibitem{urdaneta2009wikipedia}
+Urdaneta, G., Pierre, G., and Van~Steen, M., ``Wikipedia workload analysis for
+  decentralized hosting,'' {\em Computer Networks}~{\bf 53}(11),  1830--1845
+  (2009).
 
-\bibitem{cui2014shadows}
-Cui, X., Mills, B., Znati, T., and Melhem, R., ``Shadows on the cloud: An
-  energy-aware, profit maximizing resilience framework for cloud computing,''
-  in [{\em International Conference on Cloud Computing and Services Science,
-  CLOSER}{\nolinebreak\hspace{0.1em}]},  (2014).
+\bibitem{yahootrace}
+``Computing system data.''
+  \url{http://webscope.sandbox.yahoo.com/catalog.php?datatype=s}.
+\newblock Accessed: 2015-3-30.
 
-\bibitem{guenter2011managing}
-Guenter, B., Jain, N., and Williams, C., ``Managing cost, performance, and
-  reliability tradeoffs for energy-aware server provisioning,'' in [{\em
-  INFOCOM, 2011 Proceedings IEEE}{\nolinebreak\hspace{0.1em}]},   1332--1340,
-  IEEE (2011).
+\bibitem{beitch2010rain}
+Beitch, A., Liu, B., Yung, T., Griffith, R., Fox, A., and Patterson, D.~A.,
+  ``Rain: A workload generation toolkit for cloud computing applications,''
+  {\em Electrical Engineering and Computer Sciences University of California at
+  Berkeley, White paper UCB/EECS-2010-14}  (2010).
 
-\bibitem{rodero2012energy}
-Rodero, I., Viswanathan, H., Lee, E.~K., Gamell, M., Pompili, D., and Parashar,
-  M., ``Energy-efficient thermal-aware autonomic management of virtualized hpc
-  cloud infrastructure,'' {\em Journal of Grid Computing}~{\bf 10}(3),
-  447--473 (2012).
+\bibitem{wang2011towards}
+Wang, G., Butt, A.~R., Monti, H., and Gupta, K., ``Towards synthesizing
+  realistic workload traces for studying the hadoop ecosystem,'' in [{\em
+  Modeling, Analysis \& Simulation of Computer and Telecommunication Systems
+  (MASCOTS), 2011 IEEE 19th International Symposium
+  on}{\nolinebreak\hspace{0.1em}]},   400--408, IEEE (2011).
 
-\bibitem{goiri2011greenslot}
-Goiri, {\'I}., Le, K., Haque, M.~E., Beauchea, R., Nguyen, T.~D., Guitart, J.,
-  Torres, J., and Bianchini, R., ``Greenslot: scheduling energy consumption in
-  green datacenters,'' in [{\em Proceedings of 2011 International Conference
-  for High Performance Computing, Networking, Storage and
-  Analysis}{\nolinebreak\hspace{0.1em}]},   20, ACM (2011).
+\bibitem{chapin1999benchmarks}
+Chapin, S.~J., Cirne, W., Feitelson, D.~G., Jones, J.~P., Leutenegger, S.~T.,
+  Schwiegelshohn, U., Smith, W., and Talby, D., ``Benchmarks and standards for
+  the evaluation of parallel job schedulers,'' in [{\em Job Scheduling
+  Strategies for Parallel Processing}{\nolinebreak\hspace{0.1em}]},   67--90,
+  Springer (1999).
+
+\bibitem{mishra2010towards}
+Mishra, A.~K., Hellerstein, J.~L., Cirne, W., and Das, C.~R., ``Towards
+  characterizing cloud backend workloads: insights from google compute
+  clusters,'' {\em ACM SIGMETRICS Performance Evaluation Review}~{\bf 37}(4),
+  34--41 (2010).
+
+\bibitem{reiss2012heterogeneity}
+Reiss, C., Tumanov, A., Ganger, G.~R., Katz, R.~H., and Kozuch, M.~A.,
+  ``Heterogeneity and dynamicity of clouds at scale: Google trace analysis,''
+  in [{\em Proceedings of the Third ACM Symposium on Cloud
+  Computing}{\nolinebreak\hspace{0.1em}]},   7, ACM (2012).
 
 \end{thebibliography}
