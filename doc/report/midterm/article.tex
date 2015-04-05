@@ -13,7 +13,7 @@
 %  which replaces the standard style unstr.bst.  
 
 %%\documentclass[]{spie}  %>>> use for US letter paper
-\documentclass[12pt]{spie}  %>>> use this instead for A4 paper
+\documentclass[a4papert,12pt]{spie}  %>>> use this instead for A4 paper
 %%\documentclass[nocompress]{spie}  %>>> to avoid compression of citations
 %% \addtolength{\voffset}{9mm}   %>>> moves text field down
 %% \renewcommand{\baselinestretch}{1.65}   %>>> 1.65 for double spacing, 1.25 for 1.5 spacing 
@@ -27,6 +27,7 @@
 \usepackage{adjustbox,lipsum}
 \graphicspath{ {/Users/anirudhnair/code/GeoSched/src/GoogleTrace/plots} }
 \usepackage{subfig}
+\usepackage[margin=0.5in]{geometry}
 
 \title{GeoSched: Minimizing Cost of Cloud Workloads in Geo-Distributed Data Centers} 
 \author{Anirudh Jayakumar and Harshit Dokania \\
