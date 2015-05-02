@@ -10,7 +10,7 @@ import calendar
 
 cwd=os.getcwd()
 
-address="/Users/harshitdokania/Desktop/cs525/geosched/datacenters/temperature"
+address="/Users/harshitdokania/Desktop/cs525/geosched/datacenters/electricity"
 
 
 
@@ -25,20 +25,22 @@ def ConvertCSV(filename, address):
      for line in txt_file:
        myData=line.split(",")  
        t=myData[4]
+       print t 
+       print count
        if count % 168==1 and count != 1:
          weeklyTemp.append(avg/168)
-         avg=int(t)
+         avg=float(t)
          count=count+1
        else:
-         avg=avg + int(t)
+         avg=avg + float(t)
          count=count+1
      rem = count % 168 -1
      weeklyTemp.append(avg/rem)
  return weeklyTemp 
-       
 Chil_avg=ConvertCSV("chile.csv", address)    
 print len(Chil_avg)
 fin_avg=ConvertCSV("finland.csv", address)    
+print len(fin_avg)
 iowa_avg=ConvertCSV("iowa.csv", address)    
 ore_avg=ConvertCSV("oregon.csv", address)    
 sing_avg=ConvertCSV("singapore.csv", address)    
@@ -61,7 +63,7 @@ plt.plot(weeks, ore_avg, 'm-*', label='Oregon')
 plt.plot(weeks, sing_avg, 'y-o', label='Singapore')
 plt.legend( loc='upper right', numpoints = 1 )
 plt.xlabel('Months', fontsize=18)
-plt.ylabel('Weekly average temperature', fontsize=18)
+plt.ylabel('Weekly average Electricity Price', fontsize=18)
 #plt.plot(x,avg_IRE,'+', label="Ireland")
 #plt.plot(weeks, Chil_avg, 'r--', t, t**2, 'bs', t, t**3, 'g^')
 plt.show() 
