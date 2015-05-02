@@ -1,0 +1,4 @@
+<GeoSched>
+	<Simulator period="5" resourceSyncPeriod="900" />
+	<Workload avoidClass="0,1" /> 
+</GeoSched>
