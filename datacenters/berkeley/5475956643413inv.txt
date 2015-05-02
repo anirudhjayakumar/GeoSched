@@ -1,8 +1,0 @@
-720598 00191 BERKELEY COUNTY AIRPORT        2014    0    0    0    0    0    0    0    0  329   12  148    0
-720598 99999 MONCKS CORNER                  2014 2214 1301   16    2  103 2113 2044  787 1445 2192 1238 1384
-720598 00191 BERKELEY COUNTY AIRPORT        2015    0    0  379    0    0    0    0    0    0    0    0    0
-720598 99999 MONCKS CORNER                  2015 2219 1994  202    0    0    0    0    0    0    0    0    0
-
-
-Total Surface Hourly Observations Available: 20122
-Total Station-Years: 4

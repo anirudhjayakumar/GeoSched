@@ -1,6 +1,0 @@
-039690 99999 DUBLIN                         2013 1490 1343 1491 1441 1486 1440 1485 2200 2145 2223 2149 2198
-039690 99999 DUBLIN                         2014 2207 1988 2222 2152 2217 2142 2135 2179 2156 2221 2150 2223
-
-
-Total Surface Hourly Observations Available: 47083
-Total Station-Years: 2

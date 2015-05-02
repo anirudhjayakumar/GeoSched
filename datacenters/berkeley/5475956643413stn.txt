@@ -1,4 +1,0 @@
-USAF-WBAN_ID STATION NAME                   COUNTRY                                            STATE 			      LATITUDE LONGITUDE ELEVATION
------------- ------------------------------ -------------------------------------------------- ------------------------------ -------- --------- ---------
-720598 00191 BERKELEY COUNTY AIRPORT        UNITED STATES                                      SOUTH CAROLINA                  +33.183  -080.033   +0022.3
-720598 99999 MONCKS CORNER                  UNITED STATES                                      SOUTH CAROLINA                  +33.183  -080.033   +0022.0
