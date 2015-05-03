@@ -9,6 +9,8 @@
 #include "common.h"
 #include "DataCenter.h"
 #include "Job.h"
+#include <iostream>
+using namespace std;
 DataCenterProxy::DataCenterProxy() {
 	// TODO Auto-generated constructor stub
 
@@ -18,17 +20,22 @@ DataCenterProxy::~DataCenterProxy() {
 	// TODO Auto-generated destructor stub
 }
 
-int Initialize(DataCenter *dc)
+int DataCenterProxy:: Initialize(DataCenter *dc)
 {
+	cout<<"Creating Proxy\n";
+	 m_dc = dc;
 	return SUCCESS;
 }
 
-int SubmitJob(Job* pJob)
+int DataCenterProxy::SubmitJob(Job* pJob)
 {
+	cout<<"Submitting job\n";
+	m_dc->AddJobsToWaitingList(pJob);
 	return SUCCESS;
 }
 
-std::unordered_map<int,Node*> GetResourceData()
+std::unordered_map<int,Node*> DataCenterProxy:: GetResourceData()
 {
-	return std::unordered_map<int,Node*>();
+	return m_dc->GetResourceData();
+	//return std::unordered_map<int,Node*>();
 }

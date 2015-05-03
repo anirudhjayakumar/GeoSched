@@ -10,6 +10,8 @@
 #include "common.h"
 #include <string>
 #include <fstream>
+#include <iostream>
+#include "Job.h"
 using namespace std;
 
 
@@ -75,6 +77,17 @@ INT64_ TraceItem::RunningTime()
 	return (nFinishTime - nScheduledTime);
 }
 
+INT64_ TraceItem::ArrivalTime()
+{
+	return nArrivalTime;
+}
+Job* TraceItem::createJob(){
+
+	Job* nJob= new Job(nJobID, RunningTime(), nSchedClass, nTasks,fTotalCPU, fTotalMem );
+	return nJob;
+
+}
+
 std::string TraceItem::GenerateCSV()
 {
 	// the ordering of the elements is critical. Order according to the format xml
@@ -97,16 +110,20 @@ std::string TraceItem::GenerateCSV()
 
 int GoogleTrace::Initialize(const std::string &filePath)
 {
+
 	ifstream traceStream(filePath);
 	string sLine;
 	while(!traceStream.eof())
 	{
 		traceStream >> sLine;
+        //cout<<sLine<<"\n";
 		TraceItem job_;
 		job_.Init(sLine);
 		vTraceItems.push_back(job_);
+		//cout<<"Tracing"<<endl;
 	}
 	currIter = vTraceItems.begin();
+
 	traceStream.close();
 	return SUCCESS;
 }

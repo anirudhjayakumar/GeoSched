@@ -15,6 +15,18 @@ class Task {
 public:
 	Task();
 	virtual ~Task();
+	int getNodeID();
+	void setNodeID(int id);
+	int getMem();
+	void setMem(int m);
+	int getCpu();
+	void setCpu(int cp);
+	Node* getNode();
+	void setNode(Node* node);
+	Job* getJob();
+	void setJob(Job* job);
+
+
 	//add required methods
 private:
 	int NodeID;
@@ -26,8 +38,10 @@ private:
 
 class Job {
 public:
-	Job();
+	Job(INT64_, INT64_, int,  int , double , double);
 	virtual ~Job();
+	INT64_ getJobID();
+	int sClass();
 	// add required method
 private:
 	std::vector<Task*> vTasks;

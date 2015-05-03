@@ -2,7 +2,7 @@
 #define GOOGLETRACE_H_
 
 #include "common.h"
-
+#include "Job.h"
 #define JOB_ID  		0
 #define JOB_ARRIVAL  	1
 #define JOB_SCHEDTIME  	2
@@ -38,7 +38,9 @@ struct TraceItem
 	int 			Init(const std::string &sCSV);
 	INT64_ 			WaitTime();
 	INT64_ 			RunningTime();
+	INT64_ 			ArrivalTime();
 	std::string 	GenerateCSV();
+	Job* createJob();
 
 	// these are some additional info not part of the trace format but useful
 	int 	nCPUMissing;
@@ -52,6 +54,7 @@ private:
 	std::vector<TraceItem> vTraceItems;
 	std::vector<TraceItem>::iterator currIter;
 public:
+
 	int Initialize(const std::string &filePath);
 	std::vector<TraceItem*> GetNextSet(INT64_ us);
 	int WriteToFile(const std::string &filePath);
