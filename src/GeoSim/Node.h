@@ -22,6 +22,15 @@ public:
 	int nFreeMem;
 	int nNodeID;
 	std::vector<Task*> vTasks;
+	int getFreeCPU();
+	int  getFreeMem();
+	int  getNodeID();
+	int increaseCPU(int cpu);
+	int decreaseCPU(int cpu);
+	int increaseMem(int mem);
+    int decreaseMem(int mem);
+
+
 };
 
 #endif /* NODE_H_ */

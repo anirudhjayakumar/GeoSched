@@ -21,18 +21,21 @@ const string workload_5("/Users/harshitdokania/Desktop/cs525/geosched/workloads/
 
 int main()
 {
+	//Barrier(5);
 	cout << "Running" << endl;
-	DataCenter chile(1, workload_1);
-	DataCenter finland(2, workload_2);
-	DataCenter singapore(3, workload_3);
-	DataCenter oregon(4, workload_4);
-	DataCenter iowa(5, workload_5);
+	DataCenter chile(0, workload_1);
+	DataCenter finland(1, workload_2);
+	DataCenter singapore(2, workload_3);
+	DataCenter oregon(3, workload_4);
+	DataCenter iowa(4, workload_5);
 	DataCenterProxy *dcProxy= new DataCenterProxy[5];
 	dcProxy[0].Initialize(&chile);
 	dcProxy[1].Initialize(&finland);
 	dcProxy[2].Initialize(&singapore);
 	dcProxy[3].Initialize(&oregon);
 	dcProxy[4].Initialize(&iowa);
+
+
 	//unordered_map<int,Node*> 	m_map1= dcProxy[0].GetResourceData();
 			/*
 		dcProxy[1].GetResourceData()
@@ -45,12 +48,21 @@ int main()
 	singapore.set_dataCenterProxies(dcProxy);
 	oregon.set_dataCenterProxies(dcProxy);
     iowa.set_dataCenterProxies(dcProxy);
+    chile.UpdateResourceData();
+    finland.UpdateResourceData();
+    singapore.UpdateResourceData();
+    oregon.UpdateResourceData();
+    iowa.UpdateResourceData();
+    //Barrier(5).Wait();
+    //chile.Synchronize();
+    //c.Synchronize();
+
     chile.Simulation();
     finland.Simulation();
     singapore.Simulation();
     oregon.Simulation();
     iowa.Simulation();
-    cout<<"End of Simulation"<<endl;
+   // cout<<"End of Simulation"<<endl;
 
 
 

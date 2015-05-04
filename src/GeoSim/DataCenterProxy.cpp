@@ -22,7 +22,7 @@ DataCenterProxy::~DataCenterProxy() {
 
 int DataCenterProxy:: Initialize(DataCenter *dc)
 {
-	cout<<"Creating Proxy\n";
+	//cout<<"Creating Proxy\n";
 	 m_dc = dc;
 	return SUCCESS;
 }
@@ -36,6 +36,7 @@ int DataCenterProxy::SubmitJob(Job* pJob)
 
 std::unordered_map<int,Node*> DataCenterProxy:: GetResourceData()
 {
+	cout<<"Proxy resource"<<endl;
 	return m_dc->GetResourceData();
 	//return std::unordered_map<int,Node*>();
 }
