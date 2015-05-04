@@ -116,7 +116,7 @@ int GoogleTrace::Initialize(const std::string &filePath)
 	while(!traceStream.eof())
 	{
 		traceStream >> sLine;
-        //cout<<sLine<<"\n";
+    //    cout<<sLine<<"\n";
 		TraceItem job_;
 		job_.Init(sLine);
 		vTraceItems.push_back(job_);
