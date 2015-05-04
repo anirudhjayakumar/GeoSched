@@ -15,7 +15,7 @@ using namespace std;
 const string workload_chile("../../workloads/google/5_1.csv");
 const string workload_finland("../../workloads/google/5_2.csv");
 const string workload_singapore("../../workloads/google/5_3.csv");
-const string workload_oregon("/../../workloads/google/5_4.csv");
+const string workload_oregon("../../workloads/google/5_4.csv");
 const string workload_iowa("../../workloads/google/5_5.csv");
 const string config_xml("config.xml");
 

@@ -50,7 +50,6 @@ int DataCenter::Initialize(DataCenterProxy * dataCenterProxies,
 	while (!fileStream.eof()) {
 		vector<int> vTokens;
 		fileStream >> sLine;
-
 		Tokenize(sLine, ',', vTokens);
 		nodeCount = vTokens[0];
 		cpuCount = vTokens[1];
