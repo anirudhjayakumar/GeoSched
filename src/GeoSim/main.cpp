@@ -10,13 +10,14 @@
 #include <fstream>
 #include "DataCenter.h"
 #include "DataCenterProxy.h"
-
+#include "ConfigAccessor.h"
 using namespace std;
-const string workload_chile("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_1.csv");
-const string workload_finland("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_2.csv");
-const string workload_singapore("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_3.csv");
-const string workload_oregon("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_4.csv");
-const string workload_iowa("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_5.csv");
+const string workload_chile("../../workloads/google/5_1.csv");
+const string workload_finland("../../workloads/google/5_2.csv");
+const string workload_singapore("../../workloads/google/5_3.csv");
+const string workload_oregon("/../../workloads/google/5_4.csv");
+const string workload_iowa("../../workloads/google/5_5.csv");
+const string config_xml("config.xml");
 
 
 int main()
@@ -39,12 +40,15 @@ int main()
 	dcProxy[OREGON].Initialize(&oregon);
 	dcProxy[IOWA].Initialize(&iowa);
 
+	ConfigAccessor oAccessor;
+	oAccessor.Init(config_xml);
 
-	chile.set_dataCenterProxies(dcProxy);
-	finland.set_dataCenterProxies(dcProxy);
-	singapore.set_dataCenterProxies(dcProxy);
-	oregon.set_dataCenterProxies(dcProxy);
-    iowa.set_dataCenterProxies(dcProxy);
+	chile.Initialize(dcProxy,&oAccessor);
+	chile.Initialize(dcProxy,&oAccessor);
+	finland.Initialize(dcProxy,&oAccessor);
+	singapore.Initialize(dcProxy,&oAccessor);
+	oregon.Initialize(dcProxy,&oAccessor);
+    iowa.Initialize(dcProxy,&oAccessor);
 
 
     chile.UpdateResourceData();

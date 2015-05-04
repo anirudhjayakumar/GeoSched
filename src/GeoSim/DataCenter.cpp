@@ -13,7 +13,7 @@
 #include "Job.h"
 #include <fstream>
 #include <iostream>
-
+#include "ConfigAccessor.h"
 
 using namespace std;
 
@@ -34,8 +34,11 @@ DataCenter::~DataCenter() {
 	// TODO Auto-generated destructor stub
 }
 
-int DataCenter::Initialize(std::vector<DataCenterProxy *> dataCenterProxies,
-		const std::string &resourceXML) {
+int DataCenter::Initialize(DataCenterProxy * dataCenterProxies,
+		ConfigAccessor *pAccessor) {
+
+	m_pAccessor = pAccessor;
+	set_dataCenterProxies(dataCenterProxies);
 	string sLine;
 	int nodeCount;
 	int cpuCount;

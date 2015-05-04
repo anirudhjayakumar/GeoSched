@@ -19,6 +19,7 @@
 #include "common.h"
 class DataCenterProxy; //forward declare
 class Node;
+class ConfigAccessor;
 
 #define DC_COUNT    5
 #define CHILE		0
@@ -34,7 +35,7 @@ class DataCenter {
 public:
 	DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier);
 	virtual ~DataCenter();
-	int 			Initialize(std::vector<DataCenterProxy *> dataCenterProxies, const std::string &resourceXML);
+	int 			Initialize(DataCenterProxy * dataCenterProxies, ConfigAccessor *pAccessor);
 	void 			AddJobsToWaitingList(Job *pJob);
 	void 			ScheduleJobsFromWaitingList();
 	void 			PrintUtilization();
@@ -52,7 +53,6 @@ private:
 	DCResource			m_mapDCtoResource;
 	std::thread *		m_pThread;
 	NodeMap				m_mapNodes; // nodeid-> node map
-	//Barrier *barrier;
 	std::mutex          m_waitMutex;
 	std::mutex          m_resourceMutex;
 	std::list<Job*>  	m_vRunningJobs;
@@ -60,6 +60,7 @@ private:
 	GoogleTrace 		m_workLoad;
 	std::string			m_sWorkloadTrace;
 	Barrier				*m_pBarrier;
+	ConfigAccessor      *m_pAccessor;
 private:
 	bool				CheckDCFit(Job *,NodeMap &);
 	void 				StartSimulation(); //main scheduling logic goes in here
