@@ -33,7 +33,11 @@ std::vector<Task*>& Job:: getTasks(){
 }
 
 Job::~Job() {
-	// TODO Auto-generated destructor stub
+	for(auto iter = vTasks.begin(); iter != vTasks.end(); ++iter)
+	{
+		Task *pTask = *iter;
+		delete pTask;
+	}
 }
 INT64_ Job:: getJobID(){
 	return nJobID;
@@ -62,7 +66,7 @@ INT64_ Job:: getCurrTime(){
 	return nCurrRunTime;
 }
 
-int Job:: INcCurrTime(INT64_ timestamp){
+int Job:: IncCurrTime(INT64_ timestamp){
 		nCurrRunTime += timestamp ;
 		return SUCCESS;
 }
@@ -76,6 +80,7 @@ Task::Task() {
 Task::~Task() {
 	// TODO Auto-generated destructor stub
 }
+
 
 int Task::getNodeID(){
 	return NodeID;

@@ -36,7 +36,6 @@ int DataCenterProxy::SubmitJob(Job* pJob)
 
 std::unordered_map<int,Node*> DataCenterProxy:: GetResourceData()
 {
-	cout<<"Proxy resource"<<endl;
 	return m_dc->GetResourceData();
 	//return std::unordered_map<int,Node*>();
 }

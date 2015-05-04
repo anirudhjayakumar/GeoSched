@@ -14,40 +14,61 @@
 #include <unordered_map>
 #include <map>
 #include <thread>
+#include <mutex>
 #include "GoogleTrace.h"
 #include "common.h"
 class DataCenterProxy; //forward declare
 class Node;
 
+#define DC_COUNT    5
+#define CHILE		0
+#define FINLAND		1
+#define SINGAPORE	2
+#define OREGON		3
+#define IOWA		4
+
+typedef std::map<int,std::unordered_map<int,Node*> > DCResource;
+typedef std::unordered_map<int,Node*>                NodeMap;
 class Job;
 class DataCenter {
 public:
-	DataCenter(int id, const std::string &filePath);
+	DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier);
 	virtual ~DataCenter();
-	int Initialize(std::vector<DataCenterProxy *> dataCenterProxies, const std::string &resourceXML);
-	void AddJobsToWaitingList(Job *pJob);
-	void ScheduleJobsFromWaitingList(INT64_ arrival);
-	void PrintUtilization();
-	std::unordered_map<int,Node*>& GetResourceData();
-	void UpdateResourceData();
-	void set_dataCenterProxies(DataCenterProxy *proxy);
-	GoogleTrace* getWorkLoad();
-	void Synchronize();
-	void Simulation();
-	std::list<Job*>&  GetWaitingJobs();
+	int 			Initialize(std::vector<DataCenterProxy *> dataCenterProxies, const std::string &resourceXML);
+	void 			AddJobsToWaitingList(Job *pJob);
+	void 			ScheduleJobsFromWaitingList();
+	void 			PrintUtilization();
+	NodeMap 		GetResourceData();
+	void 			UpdateResourceData();
+	void 			set_dataCenterProxies(DataCenterProxy *proxy);
+	GoogleTrace* 	getWorkLoad();
+	void 			Join();
+	void 			Simulation();
+
+
 private:
-	int 		nDCid;
-	DataCenterProxy* m_dataCenterProxies; // dcid -> proxy
-	std::map<int,std::unordered_map<int,Node*> > m_mapDCtoResource;
-	std::thread *					m_pThread;
-	std::unordered_map<int,Node*> 	m_mapNodes; // nodeid-> node map
+	int 				nDCid;
+	DataCenterProxy* 	m_dataCenterProxies; // dcid -> proxy
+	DCResource			m_mapDCtoResource;
+	std::thread *		m_pThread;
+	NodeMap				m_mapNodes; // nodeid-> node map
 	//Barrier *barrier;
-	mutex                       m_waitMutex;
-	mutex                       m_resourceMutex;
-	std::list<Job*>  			m_vRunningJobs;
-	std::list<Job*>  			m_vWaitingJobs;
-	GoogleTrace* workLoad;
-	void 						StartSimulation(); //main scheduling logic goes in here
+	std::mutex          m_waitMutex;
+	std::mutex          m_resourceMutex;
+	std::list<Job*>  	m_vRunningJobs;
+	std::list<Job*>  	m_vWaitingJobs;
+	GoogleTrace 		m_workLoad;
+	std::string			m_sWorkloadTrace;
+	Barrier				*m_pBarrier;
+private:
+	bool				CheckDCFit(Job *,NodeMap &);
+	void 				StartSimulation(); //main scheduling logic goes in here
+	std::vector<int>    GetDCSchedulable(Job *);
+	void				MetaSchedJobToDC(std::vector<int> vecDCs,Job*);
+	void 				ProgressRunningJobs();
+	int 				ScheduleJob(Job *);
+	void 				RemoveJobFromWaitingQueue(Job*);
+	std::list<Job*> 	GetWaitingJobs();
 };
 
 #endif /* DATACENTER_H_ */
