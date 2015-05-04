@@ -52,7 +52,7 @@ public:
 	int setCurrTime(INT64_ arrival);
 	INT64_ getRetireTime();
 	INT64_ getCurrTime();
-	int  INcCurrTime(INT64_ timestamp);
+	int  IncCurrTime(INT64_ timestamp);
 	std::vector<Task*>& getTasks();
 	// add required method
 private:
