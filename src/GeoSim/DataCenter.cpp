@@ -194,11 +194,11 @@ void DataCenter::StartSimulation()
 								(*t)->setNodeID(m_mapDCtoResource[i][pN[i]]->getNodeID());
 								(*t)->setNode(m_mapDCtoResource[i][pN[i]]);
 								cout<<"While writing Node Id from random "<<"\t"<<(*t)->getNodeID()<<endl;
-
 							}
-
-							m_mapDCtoResource[i][pN[i]]->increaseCPU((*t)->getCpu());
-							m_mapDCtoResource[i][pN[i]]->increaseMem((*t)->getMem());
+							else{
+							   m_mapDCtoResource[i][pN[i]]->increaseCPU((*t)->getCpu());
+							   m_mapDCtoResource[i][pN[i]]->increaseMem((*t)->getMem());
+							}
 						}
 
 					}
@@ -265,6 +265,14 @@ void DataCenter::ScheduleJobsFromWaitingList(INT64_ arrival){
 	while(!waitJobs.empty()){
 		Job* pJob=waitJobs.front();
 		waitJobs.pop_front();
+		std::vector<Task*> Tasks = pJob->getTasks();
+		for(auto t = Tasks.begin(); t != Tasks.end(); t++){
+		  int Tcpu = (*t)->getCpu();
+		  int Tmem = (*t)->getMem();
+		  cout<<"Node Id  "<<"\t"<<(*t)->getNodeID()<<endl;
+		  availResource[(*t)->getNodeID()]->decreaseCPU(Tcpu);
+		  availResource[(*t)->getNodeID()]->decreaseMem(Tmem);
+		}
 		pJob->setCurrTime(arrival);
 		m_vRunningJobs.push_back(pJob);
 		cout <<"Scheduling from waiting list"<<endl;
