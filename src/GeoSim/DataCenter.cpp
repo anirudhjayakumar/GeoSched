@@ -115,7 +115,9 @@ void DataCenter::StartSimulation() {
 	// or till the time all jobs complete running.
 	while (!m_workLoad.FileEnd() || m_vRunningJobs.size()) {
 		/* Take load for this interval */
-		vector<TraceItem*> currLoad = m_workLoad.GetNextSet(arrivalTime);
+
+        
+        vector<TraceItem*> currLoad = m_workLoad.GetNextSet(arrivalTime);
 		if (currLoad.size()) {
 			cout << "DC " << nDCid << ": Job set size: " <<  currLoad.size() << endl;
 			for (auto it = currLoad.begin(); it != currLoad.end(); it++) {
@@ -139,6 +141,17 @@ void DataCenter::StartSimulation() {
 
 			}
 		}
+		else 
+		{
+			// some code so that barier is not reentered before other exits
+			int b,c,d=0;
+        	for(int a = 0; a < 3456789 ; a++)
+			{
+				b = a + 4 + d;
+				c = b + (rand()%5);
+				d = b + c;
+		}
+		}
 
 		// inc running job time and remove jobs that are done
 		ProgressRunningJobs();
@@ -159,6 +172,7 @@ void DataCenter::StartSimulation() {
 
 	}
 
+    cout << "DC exits " << nDCid << endl;
 	return;
 }
 
