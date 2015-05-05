@@ -21,10 +21,12 @@ void Barrier::Wait()
 {
 	std::unique_lock<std::mutex> lock{_mutex};
 	if (--_count == 0) {
-		//_count = _org_val;
+		cout << "barrier:" << _count << endl; 
+		_count = _org_val;
 		_cv.notify_all();
 	} else {
-		_cv.wait(lock, [this] { return _count == 0; });
+		cout << "barrier:" << _count << endl; 
+		_cv.wait(lock, [this] { return _count == _org_val; });
 	}
 }
 
