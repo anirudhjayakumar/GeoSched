@@ -116,7 +116,7 @@ int GoogleTrace::Initialize(const std::string &filePath)
 	while(!traceStream.eof())
 	{
 		traceStream >> sLine;
-        //cout<<sLine<<"\n";
+    //    cout<<sLine<<"\n";
 		TraceItem job_;
 		job_.Init(sLine);
 		vTraceItems.push_back(job_);
@@ -139,9 +139,18 @@ vector<TraceItem *> GoogleTrace::GetNextSet(INT64_ us)
 	{
 		ret.push_back(nextJob);
 		currIter++;
+		if(currIter == vTraceItems.end())
+			break;
 		nextJob = &(*currIter);
 	}
 	return ret;
+}
+
+bool  GoogleTrace::FileEnd()
+{
+	if(currIter == vTraceItems.end())
+		return true;
+	else return false;
 }
 
 int GoogleTrace::WriteToFile(const std::string &filePath)

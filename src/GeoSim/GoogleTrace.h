@@ -57,6 +57,7 @@ public:
 
 	int Initialize(const std::string &filePath);
 	std::vector<TraceItem*> GetNextSet(INT64_ us);
+	bool  FileEnd();
 	int WriteToFile(const std::string &filePath);
 };
 
