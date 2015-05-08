@@ -38,8 +38,23 @@ private:
     int  thread_count;
 public:
     explicit Barrier(std::size_t count);
+    void decrement();
     void Wait(int);
 };
+
+
+class Log{
+    
+private:
+    std::mutex  m_LogMutex;
+public:
+   void print(string s);
+};
+
+
+
+
+
 
 
 

@@ -33,7 +33,7 @@ typedef std::unordered_map<int,Node*>                NodeMap;
 class Job;
 class DataCenter {
 public:
-	DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier);
+	DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string name, int gmtDiff);
 	virtual ~DataCenter();
 	int 			Initialize(DataCenterProxy * dataCenterProxies, ConfigAccessor *pAccessor);
 	void 			AddJobsToWaitingList(Job *pJob);
@@ -42,9 +42,14 @@ public:
 	NodeMap 		GetResourceData();
 	void 			UpdateResourceData();
 	void 			set_dataCenterProxies(DataCenterProxy *proxy);
+    void            DecreaseBarrier();
 	GoogleTrace* 	getWorkLoad();
 	void 			Join();
 	void 			Simulation();
+    string          getLocalTime();
+    string          GetName();
+    Barrier*        getBarrier();
+    void            decrementBarrier();
 
 
 private:
@@ -61,7 +66,7 @@ private:
 	std::string			m_sWorkloadTrace;
 	Barrier				*m_pBarrier;
 	ConfigAccessor      *m_pAccessor;
-private:
+    int                 m_GMT;
 	bool				CheckDCFit(Job *,NodeMap &);
 	void 				StartSimulation(); //main scheduling logic goes in here
 	std::vector<int>    GetDCSchedulable(Job *);
@@ -70,6 +75,10 @@ private:
 	int 				ScheduleJob(Job *);
 	void 				RemoveJobFromWaitingQueue(Job*);
 	std::list<Job*> 	GetWaitingJobs();
+    string              localtime(int gmtDiff);
+    string              name;
+     Log                 L;
+   
 };
 
 #endif /* DATACENTER_H_ */

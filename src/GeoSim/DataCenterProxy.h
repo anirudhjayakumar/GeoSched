@@ -23,6 +23,8 @@ public:
 	int Initialize(DataCenter *dc);
 	int SubmitJob(Job* pJob);
 	std::unordered_map<int,Node*> GetResourceData();
+    void InformLeaving();
+    int GetName();
 private:
 	DataCenter *m_dc;
 };
