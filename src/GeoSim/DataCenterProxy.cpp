@@ -29,10 +29,23 @@ int DataCenterProxy:: Initialize(DataCenter *dc)
 
 int DataCenterProxy::SubmitJob(Job* pJob)
 {
-	cout<<"Submitting job\n";
+	
 	m_dc->AddJobsToWaitingList(pJob);
 	return SUCCESS;
 }
+int DataCenterProxy::GetName()
+{
+    
+    m_dc->GetName();
+    return SUCCESS;
+}
+
+void DataCenterProxy::InformLeaving(){
+    
+    m_dc->decrementBarrier();
+}
+
+
 
 std::unordered_map<int,Node*> DataCenterProxy:: GetResourceData()
 {

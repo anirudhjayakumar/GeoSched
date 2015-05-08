@@ -88,6 +88,32 @@ Job* TraceItem::createJob(){
 	return nJob;
 
 }
+string  localtime(int i){
+    
+    string Time;
+    time_t m_Time;
+    struct tm * ptm;
+    
+    time ( &m_Time );
+    ptm = gmtime(&m_Time);
+    if(ptm->tm_hour+i<=0){
+        Time=to_string(ptm->tm_hour+i+12);
+    }
+    else
+        Time=to_string((ptm->tm_hour+i)%24);
+    Time+=":";
+    if((ptm->tm_min)<9) {
+        Time+="0" ;
+    }
+    Time+=to_string((ptm->tm_min));
+    Time+=":";
+    if((ptm->tm_sec)<9){
+        Time+="0" ;
+    }
+    Time+=to_string((ptm->tm_sec));
+    return Time;
+}
+
 
 std::string TraceItem::GenerateCSV()
 {
@@ -109,7 +135,7 @@ std::string TraceItem::GenerateCSV()
 }
 
 
-int GoogleTrace::Initialize(const std::string &filePath)
+int GoogleTrace::Initialize(const std::string &filePath, string name, int GMT)
 {
 
 	ifstream traceStream(filePath);
@@ -117,19 +143,19 @@ int GoogleTrace::Initialize(const std::string &filePath)
 	while(!traceStream.eof())
 	{
 		traceStream >> sLine;
-    //    cout<<sLine<<"\n";
+    
 		TraceItem job_;
 		job_.Init(sLine);
 		vTraceItems.push_back(job_);
-		//cout<<"Tracing"<<endl;
 	}
 	currIter = vTraceItems.begin();
-
+    
 	traceStream.close();
+    cout<<name<<" Completed Workload tracing at "<<localtime(GMT)<<endl;
 	return SUCCESS;
 }
 
-vector<TraceItem *> GoogleTrace::GetNextSet(INT64_ us)
+vector<TraceItem *> GoogleTrace::GetNextSet(INT64_ us, string name, int GMT)
 {
 	vector<TraceItem *> ret;
 	if(currIter == vTraceItems.end())
@@ -144,6 +170,7 @@ vector<TraceItem *> GoogleTrace::GetNextSet(INT64_ us)
 			break;
 		nextJob = &(*currIter);
 	}
+    
 	return ret;
 }
 

@@ -15,19 +15,25 @@
 #include <fstream>
 #include <iostream>
 #include "ConfigAccessor.h"
+#include <stdio.h>
 
 using namespace std;
 
 #define TIMEINC 				5000000   // 5 secs in us
 #define RESOURCE_SYNC_TIME		900000000 // 900 secs in us
 
-const string machineConfig("../../datacenters/machine_config.csv");
+const string machineConfig("/Users/harshitdokania/Desktop/cs525/geosched/datacenters/machine_config.csv");
 
-DataCenter::DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier) {
+DataCenter::DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string n, int gmtDiff) {
 	// TODO Auto-generated constructor stub
 	nDCid = id;
 	m_sWorkloadTrace = workloadPath;
 	m_pBarrier = pBarrier;
+    name = n;
+    m_GMT = gmtDiff;
+    
+    string s= "Started creating " + name + " DataCenter at " +getLocalTime() + "\n";
+    L.print(s);
 
 }
 
@@ -46,6 +52,7 @@ int DataCenter::Initialize(DataCenterProxy * dataCenterProxies,
 	int memAvail;
 	ifstream fileStream(machineConfig);
 	int nodeID = 0;
+   
 
 	NodeMap mapNodes;
 	while (!fileStream.eof()) {
@@ -68,16 +75,21 @@ int DataCenter::Initialize(DataCenterProxy * dataCenterProxies,
 		}
 	}
 	m_mapDCtoResource[nDCid] = mapNodes;
+    string s= "Completed creating "+ name +" DataCenter at "+ getLocalTime()+"\n";
+    L.print(s);
+    
+    
 
-	//cout<<"Started tracing"<<endl;
+	
 
-	m_workLoad.Initialize(m_sWorkloadTrace);
+	m_workLoad.Initialize(m_sWorkloadTrace, name, m_GMT);
 
 	return SUCCESS;
 }
 
 void DataCenter::AddJobsToWaitingList(Job *pJob) {
-	m_waitMutex.lock();
+   
+    m_waitMutex.lock();
 	m_vWaitingJobs.push_back(pJob);
 	m_waitMutex.unlock();
 	//cout << "Added to wait list\n";
@@ -96,7 +108,20 @@ list<Job*> DataCenter::GetWaitingJobs() {
 
 }
 
+string  DataCenter:: getLocalTime(){
+    return localtime(m_GMT);
+}
+
+Barrier* DataCenter:: getBarrier(){
+    return m_pBarrier;
+}
+
+
+
+
 NodeMap DataCenter::GetResourceData() {
+   // string s = name + " Getting resource data at " +getLocalTime()+"\n";
+    //L.print(s);
 	m_resourceMutex.lock();
 	NodeMap nodeMap = m_mapDCtoResource[nDCid];
 	m_resourceMutex.unlock();
@@ -109,7 +134,8 @@ GoogleTrace* DataCenter::getWorkLoad() {
 
 void DataCenter::StartSimulation() {
 
-	cout << "Simulation Started" << endl;
+	string s =name + " Entered Simulation at "+getLocalTime()+"\n";
+     L.print(s);
 	INT64_ arrivalTime = TIMEINC;
     int cycle_count = 1;
 	// loop till the time there are jobs left in the trace
@@ -118,25 +144,23 @@ void DataCenter::StartSimulation() {
 		/* Take load for this interval */
 
         
-        vector<TraceItem*> currLoad = m_workLoad.GetNextSet(arrivalTime);
+        vector<TraceItem*> currLoad = m_workLoad.GetNextSet(arrivalTime, name, m_GMT);
 		if (currLoad.size()) {
-			//cout << "DC " << nDCid << ": Job set size: " <<  currLoad.size() << endl;
+            s= "Job Arrival at "+ name+ " size: "+to_string(currLoad.size()) +"time: "+ getLocalTime()+"\n";
+           L.print(s);
 			for (auto it = currLoad.begin(); it != currLoad.end(); it++) {
 				//
 				Job* pJob = (*it)->createJob();
 
 				/* high sensitive jobs put in my own queue */
 				if (pJob->sClass() == 2 || pJob->sClass() == 3) {
-					//	cout<<"job = "<<pJob->sClass()<<endl;
-					//cout << "DC " << nDCid << ": JobID: " <<  pJob->getJobID() << " send to local queue due to high sensitivity" << endl;
+                    cout<<"High sensitive jobs at "<<name<< "time: "<<getLocalTime()<<endl;
+					
 					AddJobsToWaitingList(pJob); // schedule during schedule phase
 				} else {
-
+                    cout<<name<< "Checking resource available at time: "<<getLocalTime()<<endl;
 					auto vecDCs = GetDCSchedulable(pJob);
-					//cout << "DC " << nDCid << ": JobID: " <<  pJob->getJobID() << " Schedulable DCs";
-					//for (auto iter = vecDCs.begin(); iter != vecDCs.end(); ++iter)
-					//	cout << *iter << " ";
-				//	cout << endl;
+					
 					MetaSchedJobToDC(vecDCs, pJob);
 				}
 
@@ -172,16 +196,30 @@ void DataCenter::StartSimulation() {
 		// barrier: all threads stop here before proceeding
         cycle_count++;
 	}
-
+    
+    DecreaseBarrier();
     cout << "DC exits " << nDCid << endl;
 	return;
 }
+
+void DataCenter::  decrementBarrier(){
+    m_pBarrier->decrement();
+}
+
 
 void DataCenter::MetaSchedJobToDC(std::vector<int> vecDCs, Job* pJob)
 {
 	// will be replaced with advanced algo. for now choose random dc id and send job
 	int dc_id = rand() % vecDCs.size();
+    cout<<name<<" Scheduling jobs on "<<m_dataCenterProxies[dc_id].GetName()<<"time: "<<getLocalTime()<<endl;
 	m_dataCenterProxies[dc_id].SubmitJob(pJob);
+}
+
+void DataCenter:: DecreaseBarrier(){
+    for (int i = 0; i < DC_COUNT; i++) {
+        if (i != nDCid)
+            m_dataCenterProxies[i].InformLeaving();
+    }
 }
 
 vector<int> DataCenter::GetDCSchedulable(Job *pJob)
@@ -194,6 +232,9 @@ vector<int> DataCenter::GetDCSchedulable(Job *pJob)
 	}
 	return ret;
 }
+string DataCenter:: GetName(){
+    return name;
+}
 
 void DataCenter::ProgressRunningJobs() {
 	NodeMap &availResource = m_mapDCtoResource[nDCid];
@@ -205,10 +246,11 @@ void DataCenter::ProgressRunningJobs() {
 		Job* pJob = *j;
 		pJob->IncCurrTime(TIMEINC);
 		if (pJob->GetTotalRunTime() <= pJob->getCurrTime()) {
-			cout <<"job complete " << nDCid << " "<<  pJob->getJobID()  << endl;
+            cout <<"Job Completed at "<<name<<" time: "<<getLocalTime()<<endl;
             std::vector<Task*> Tasks = pJob->getTasks();
 			// iterate through each task and reclaim the node resource
 			// also remove task from node's task list
+            
 			for (auto t = Tasks.begin(); t != Tasks.end(); t++) {
 				//reclaiming node resource
 				int Tcpu = (*t)->getCpu();
@@ -217,11 +259,10 @@ void DataCenter::ProgressRunningJobs() {
 				m_resourceMutex.lock();
 				availResource[nodeId]->increaseCPU(Tcpu);
 				availResource[nodeId]->increaseMem(Tmem);
-
-				//removing task from node task list
-				availResource[nodeId]->vTasks.erase(remove(availResource[nodeId]->vTasks.begin(), \
-						availResource[nodeId]->vTasks.end(), *t), availResource[nodeId]->vTasks.end());
-
+                cout<<name<<" Free the resource and delete tasks "<<getLocalTime()<<endl;
+                				//removing task from node task list
+				availResource[nodeId]->vTasks.erase(remove(availResource[nodeId]->vTasks.begin(), availResource[nodeId]->vTasks.end(), *t), availResource[nodeId]->vTasks.end());
+               
 				m_resourceMutex.unlock();
 
 			}
@@ -242,6 +283,8 @@ void DataCenter::UpdateResourceData() {
 		if (i != nDCid)
 			m_mapDCtoResource[i] = m_dataCenterProxies[i].GetResourceData();
 	}
+    string s = name + " Completed Updating Resource at " + getLocalTime()+"\n";
+    L.print(s);
 }
 
 void DataCenter::Join() {
@@ -363,3 +406,29 @@ void DataCenter::set_dataCenterProxies(DataCenterProxy *proxy) {
 
 m_dataCenterProxies = proxy;
 }
+string DataCenter:: localtime(int i){
+    
+    string Time;
+    time_t m_Time;
+    struct tm * ptm;
+    
+    time ( &m_Time );
+    ptm = gmtime(&m_Time);
+    if(ptm->tm_hour+i<=0){
+        Time=to_string(ptm->tm_hour+i+12);
+    }
+    else
+        Time=to_string((ptm->tm_hour+i)%24);
+    Time+=":";
+    if((ptm->tm_min)<9) {
+        Time+="0" ;
+    }
+    Time+=to_string((ptm->tm_min));
+    Time+=":";
+    if((ptm->tm_sec)<9){
+        Time+="0" ;
+    }
+    Time+=to_string((ptm->tm_sec));
+    return Time;
+}
+
