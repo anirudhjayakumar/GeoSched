@@ -156,11 +156,17 @@ void DataCenter::StartSimulation() {
 				if (pJob->sClass() == 2 || pJob->sClass() == 3) {
                     cout<<"High sensitive jobs at "<<name<< "time: "<<getLocalTime()<<endl;
 					
+					//	cout<<"job = "<<pJob->sClass()<<endl;
+					//cout << "DC " << nDCid << ": JobID: " <<  pJob->getJobID() << " send to local queue due to high sensitivity" << endl;
 					AddJobsToWaitingList(pJob); // schedule during schedule phase
 				} else {
                     cout<<name<< "Checking resource available at time: "<<getLocalTime()<<endl;
 					auto vecDCs = GetDCSchedulable(pJob);
 					
+					//cout << "DC " << nDCid << ": JobID: " <<  pJob->getJobID() << " Schedulable DCs";
+					//for (auto iter = vecDCs.begin(); iter != vecDCs.end(); ++iter)
+					//	cout << *iter << " ";
+				//	cout << endl;
 					MetaSchedJobToDC(vecDCs, pJob);
 				}
 

@@ -55,8 +55,8 @@ private:
 	std::vector<TraceItem>::iterator currIter;
 public:
 
-	int Initialize(const std::string &filePath);
-	std::vector<TraceItem*> GetNextSet(INT64_ us);
+	int Initialize(const std::string &filePath, string name, int GMT);
+	std::vector<TraceItem*> GetNextSet(INT64_ us, string name, int GMT);
 	bool  FileEnd();
 	int WriteToFile(const std::string &filePath);
 };
