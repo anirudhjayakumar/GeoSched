@@ -8,8 +8,11 @@
 #include "Job.h"
 #include "Node.h"
 #include "common.h"
+using namespace std;
 
-
+Job::Job()
+{
+}
 
 Job::Job(INT64_ id, INT64_ runtime, int sClass, int tasks, double cpu, double mem) {
 	// TODO Auto-generated constructor stub
@@ -20,7 +23,7 @@ Job::Job(INT64_ id, INT64_ runtime, int sClass, int tasks, double cpu, double me
    double myCpu = cpu/tasks;
    double myMem = mem/tasks;
    for(int i=0; i<tasks ; i++){
-	   Task *t= new Task;
+	   Task *t= new Task();
 	   t->setMem(myMem);
 	   t->setCpu(myCpu);
 	   t->setJob(this);
@@ -28,16 +31,21 @@ Job::Job(INT64_ id, INT64_ runtime, int sClass, int tasks, double cpu, double me
    }
 }
 
-std::vector<Task*>& Job:: getTasks(){
- return vTasks;
+vector<Task*> Job:: getTasks(){
+ vector<Task*> tasks = vTasks;
+ return tasks;
 }
 
 Job::~Job() {
-	for(auto iter = vTasks.begin(); iter != vTasks.end(); ++iter)
+	for(auto iter = vTasks.begin(); iter != vTasks.end();)
 	{
 		Task *pTask = *iter;
+        iter++;
 		delete pTask;
+
 	}
+    vTasks.clear();
+    
 }
 INT64_ Job:: getJobID(){
 	return nJobID;
@@ -47,20 +55,11 @@ int Job::sClass(){
 	return nSchedClass;
 }
 
-
-int Job:: setRetireTime(){
-	nRetireTime= nCurrRunTime + nTotalRunTime;
-	return SUCCESS;
-}
-int Job:: setCurrTime(INT64_ arrival){
-		nCurrRunTime = arrival;
-		setRetireTime();
-		return SUCCESS;
+INT64_ Job::GetTotalRunTime()
+{
+    return nTotalRunTime;
 }
 
-INT64_ Job:: getRetireTime(){
-	return nRetireTime;
-}
 
 INT64_ Job:: getCurrTime(){
 	return nCurrRunTime;
@@ -114,13 +113,6 @@ void Task::setNode(Node* node){
  Job* Task::getJob(){
 	return pJob;
 }
- map<int, int> Task::getPossibleNodes(){
-	 return possibleNode;
- }
-int Task::setPossibleNodes(map<int,int> pN){
- 	  possibleNode = pN;
- 	  return SUCCESS;
-  }
 
 
 

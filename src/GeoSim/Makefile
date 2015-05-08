@@ -9,7 +9,7 @@
 CC = g++
 
 # define any compile-time flags
-CFLAGS = -Wall -O0 -g  -pthread -std=c++11
+CFLAGS = -g -gdwarf-2 -pthread -std=c++11
 
 # define any directories containing header files other than /usr/include
 #

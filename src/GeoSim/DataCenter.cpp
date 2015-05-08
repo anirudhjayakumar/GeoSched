@@ -1,4 +1,5 @@
 /*
+
  * DataCenter.cpp
  *
  *  Created on: May 2, 2015
@@ -79,7 +80,7 @@ void DataCenter::AddJobsToWaitingList(Job *pJob) {
 	m_waitMutex.lock();
 	m_vWaitingJobs.push_back(pJob);
 	m_waitMutex.unlock();
-	cout << "Added to wait list\n";
+	//cout << "Added to wait list\n";
 
 }
 
@@ -110,7 +111,7 @@ void DataCenter::StartSimulation() {
 
 	cout << "Simulation Started" << endl;
 	INT64_ arrivalTime = TIMEINC;
-
+    int cycle_count = 1;
 	// loop till the time there are jobs left in the trace
 	// or till the time all jobs complete running.
 	while (!m_workLoad.FileEnd() || m_vRunningJobs.size()) {
@@ -119,7 +120,7 @@ void DataCenter::StartSimulation() {
         
         vector<TraceItem*> currLoad = m_workLoad.GetNextSet(arrivalTime);
 		if (currLoad.size()) {
-			cout << "DC " << nDCid << ": Job set size: " <<  currLoad.size() << endl;
+			//cout << "DC " << nDCid << ": Job set size: " <<  currLoad.size() << endl;
 			for (auto it = currLoad.begin(); it != currLoad.end(); it++) {
 				//
 				Job* pJob = (*it)->createJob();
@@ -127,15 +128,15 @@ void DataCenter::StartSimulation() {
 				/* high sensitive jobs put in my own queue */
 				if (pJob->sClass() == 2 || pJob->sClass() == 3) {
 					//	cout<<"job = "<<pJob->sClass()<<endl;
-					cout << "DC " << nDCid << ": JobID: " <<  pJob->getJobID() << " send to local queue due to high sensitivity" << endl;
+					//cout << "DC " << nDCid << ": JobID: " <<  pJob->getJobID() << " send to local queue due to high sensitivity" << endl;
 					AddJobsToWaitingList(pJob); // schedule during schedule phase
 				} else {
 
 					auto vecDCs = GetDCSchedulable(pJob);
-					cout << "DC " << nDCid << ": JobID: " <<  pJob->getJobID() << " Schedulable DCs";
-					for (auto iter = vecDCs.begin(); iter != vecDCs.end(); ++iter)
-						cout << *iter << " ";
-					cout << endl;
+					//cout << "DC " << nDCid << ": JobID: " <<  pJob->getJobID() << " Schedulable DCs";
+					//for (auto iter = vecDCs.begin(); iter != vecDCs.end(); ++iter)
+					//	cout << *iter << " ";
+				//	cout << endl;
 					MetaSchedJobToDC(vecDCs, pJob);
 				}
 
@@ -166,10 +167,10 @@ void DataCenter::StartSimulation() {
 		}
 
 		cout << "DC waits " << nDCid << endl;
-		m_pBarrier->Wait();
+		m_pBarrier->Wait(cycle_count);
 		cout << "DC resumes " << nDCid << endl;
 		// barrier: all threads stop here before proceeding
-
+        cycle_count++;
 	}
 
     cout << "DC exits " << nDCid << endl;
@@ -196,12 +197,16 @@ vector<int> DataCenter::GetDCSchedulable(Job *pJob)
 
 void DataCenter::ProgressRunningJobs() {
 	NodeMap &availResource = m_mapDCtoResource[nDCid];
-	for (auto j = m_vRunningJobs.begin(); j != m_vRunningJobs.end(); j++) {
+	
+    list<Job*>::iterator j = m_vRunningJobs.begin();
+    while (j != m_vRunningJobs.end())
+    {
 
 		Job* pJob = *j;
 		pJob->IncCurrTime(TIMEINC);
-		if (pJob->getRetireTime() <= pJob->getCurrTime()) {
-			std::vector<Task*> Tasks = pJob->getTasks();
+		if (pJob->GetTotalRunTime() <= pJob->getCurrTime()) {
+			cout <<"job complete " << nDCid << " "<<  pJob->getJobID()  << endl;
+            std::vector<Task*> Tasks = pJob->getTasks();
 			// iterate through each task and reclaim the node resource
 			// also remove task from node's task list
 			for (auto t = Tasks.begin(); t != Tasks.end(); t++) {
@@ -220,10 +225,15 @@ void DataCenter::ProgressRunningJobs() {
 				m_resourceMutex.unlock();
 
 			}
-			m_vRunningJobs.erase(remove(m_vRunningJobs.begin(), m_vRunningJobs.end(), pJob), m_vRunningJobs.end());
 			delete pJob;
+			j = m_vRunningJobs.erase(j);
 		}
+        else
+        {
+            j++;
+        }
 	}
+    
 }
 
 void DataCenter::UpdateResourceData() {
@@ -244,7 +254,7 @@ void DataCenter::Simulation() {
 
 bool DataCenter::CheckDCFit(Job *pJob, NodeMap &nodeMap) {
 	vector<Task*> fit;
-	vector<Task *> &vTasks = pJob->getTasks();
+	vector<Task *> vTasks = pJob->getTasks();
 	for (auto node_iter = nodeMap.begin(); node_iter != nodeMap.end();
 			++node_iter) {
 		// check if task can fit into this node
@@ -267,7 +277,7 @@ bool DataCenter::CheckDCFit(Job *pJob, NodeMap &nodeMap) {
 int DataCenter::ScheduleJob(Job *pJob) {
 	NodeMap &nodeMap = m_mapDCtoResource[nDCid];
 	vector<Task*> fit;
-	vector<Task *> &vTasks = pJob->getTasks();
+	vector<Task *> vTasks = pJob->getTasks();
 	for (auto node_iter = nodeMap.begin(); node_iter != nodeMap.end();
 			++node_iter) {
 		// check if task can fit into this node
@@ -301,7 +311,7 @@ int DataCenter::ScheduleJob(Job *pJob) {
 
 		m_vRunningJobs.push_back(pJob);
 		RemoveJobFromWaitingQueue(pJob);
-		cout << "Finnished scheduling job " << pJob->getJobID() << endl;
+		//cout << "Finnished scheduling job " << pJob->getJobID() << endl;
 	}
 	else {
 		// remove assigned tasks from nodes and reclaim resources
@@ -320,7 +330,7 @@ int DataCenter::ScheduleJob(Job *pJob) {
 			m_resourceMutex.unlock();
 
 		}
-		cout << "Unable to schedule job " << pJob->getJobID() << endl;
+	//	cout << "Unable to schedule job " << pJob->getJobID() << endl;
 	}
 	return SUCCESS;
 }
@@ -328,8 +338,7 @@ int DataCenter::ScheduleJob(Job *pJob) {
 void DataCenter::RemoveJobFromWaitingQueue(Job* pJob)
 {
 	m_waitMutex.lock();
-	m_vWaitingJobs.erase(remove(m_vWaitingJobs.begin(), m_vWaitingJobs.end(), pJob), \
-			m_vWaitingJobs.end());
+	m_vWaitingJobs.remove(pJob);
 	m_waitMutex.unlock();
 }
 
