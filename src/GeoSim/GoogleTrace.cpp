@@ -82,8 +82,9 @@ INT64_ TraceItem::ArrivalTime()
 	return nArrivalTime;
 }
 Job* TraceItem::createJob(){
-
+    //cout << "=====creating jobs " << nJobID << "  " << nTasks  << "======"<< endl; 
 	Job* nJob= new Job(nJobID, RunningTime(), nSchedClass, nTasks,fTotalCPU, fTotalMem );
+    cout << GenerateCSV() << endl;
 	return nJob;
 
 }

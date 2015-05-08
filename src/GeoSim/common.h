@@ -35,9 +35,10 @@ private:
     std::condition_variable _cv;
     std::size_t _count;
     std::size_t _org_val;
+    int  thread_count;
 public:
     explicit Barrier(std::size_t count);
-    void Wait();
+    void Wait(int);
 };
 
 

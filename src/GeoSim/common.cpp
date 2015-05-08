@@ -14,19 +14,22 @@ using namespace std;
 
 Barrier::Barrier(std::size_t count)
 {
+    thread_count = 0;
 	_count = _org_val = count;
 }
 
-void Barrier::Wait()
+void Barrier::Wait(int local_count)
 {
+    
 	std::unique_lock<std::mutex> lock{_mutex};
 	if (--_count == 0) {
-		cout << "barrier:" << _count << endl; 
+		//cout << "barrier:" << _count << endl; 
 		_count = _org_val;
+        thread_count = local_count;
 		_cv.notify_all();
 	} else {
-		cout << "barrier:" << _count << endl; 
-		_cv.wait(lock, [this] { return _count == _org_val; });
+		//cout << "barrier:" << _count << endl; 
+		_cv.wait(lock, [this,local_count] { return thread_count == local_count; });
 	}
 }
 
