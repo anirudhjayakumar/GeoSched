@@ -45,12 +45,12 @@ int Node:: getTotalMem(){
 		    return FAIL;
 		}
 	int Node::increaseMem(int mem){
-		    nFreeCPU= nFreeMem+ mem;
+		    nFreeMem= nFreeMem+ mem;
 		    return SUCCESS;
 		}
 		int Node::decreaseMem(int mem){
 			    if(nFreeMem>mem){
-			    nFreeCPU= nFreeMem- mem;
+			    nFreeMem= nFreeMem- mem;
 			    return SUCCESS;
 			    }
 			    return FAIL;

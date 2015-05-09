@@ -43,13 +43,6 @@ public:
 };
 
 
-class Log{
-    
-private:
-    std::mutex  m_LogMutex;
-public:
-   void print(string s);
-};
 
 
 

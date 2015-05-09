@@ -77,7 +77,6 @@ private:
 	std::list<Job*> 	GetWaitingJobs();
     string              localtime(int gmtDiff);
     string              name;
-    Log                 L;
     string              m_ExecutionTraces;
     int Logfile(string msg);
    

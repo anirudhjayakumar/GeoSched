@@ -78,11 +78,10 @@ int DataCenter::Initialize(DataCenterProxy * dataCenterProxies,
 	}
 	m_mapDCtoResource[nDCid] = mapNodes;
     string s= "Completed creating "+ name +" DataCenter at "+ getLocalTime();
-    s= "Debug utilize while creating ";
+   
     Logfile(s);
-    PrintUtilization();
-
-    Logfile(s);
+   
+   
     m_workLoad.Initialize(m_sWorkloadTrace, name, m_GMT, m_ExecutionTraces);
 
 	return SUCCESS;
@@ -107,7 +106,7 @@ void DataCenter::PrintUtilization() {
     INT64_ useMem(0);
     double pCpu;
     double pMem;
-
+    string s;
     
     for (auto node_iter = nodeMap.begin(); node_iter != nodeMap.end();
          ++node_iter) {
@@ -119,19 +118,14 @@ void DataCenter::PrintUtilization() {
         totalMem+= node_iter->second->getTotalMem();
     }
     
-    string s = name+ " Total CPU  "+ to_string(totalCpu) +"Total Memory: "+ to_string(totalMem);
-    Logfile(s);
-     s = name+ " Free CPU  "+ to_string(freeCpu) +"Free Memory: "+ to_string(freeMem);
-    Logfile(s);
-
+    
     useCpu = totalCpu - freeCpu;
     useMem = totalMem - freeMem;
-    s = name+ " Use CPU  "+ to_string(useCpu) +"Use Memory: "+ to_string(useMem);
-    Logfile(s);
+  
 
     pCpu=((double)useCpu / (double)totalCpu)*100;
     pMem=((double)useMem / (double)totalMem)*100;
-    s = name+ " CPU Utilization: "+ to_string(pCpu) +" Memory Utilization: "+ to_string(pMem);
+    s = name+ " CPU Utilization: "+ to_string(pCpu) +"% Memory Utilization: "+ to_string(pMem)+"%";
     Logfile(s);
 
     
@@ -334,9 +328,7 @@ void DataCenter::ProgressRunningJobs() {
 				m_resourceMutex.lock();
 				availResource[nodeId]->increaseCPU(Tcpu);
 				availResource[nodeId]->increaseMem(Tmem);
-                s= "Debug utilize while finished ";
-                Logfile(s);
-                PrintUtilization();
+               
                               				//removing task from node task list
 				availResource[nodeId]->vTasks.erase(remove(availResource[nodeId]->vTasks.begin(), availResource[nodeId]->vTasks.end(), *t), availResource[nodeId]->vTasks.end());
                
@@ -418,14 +410,11 @@ int DataCenter::ScheduleJob(Job *pJob) {
 					int CPU = (*task_iter)->getCpu();
 					int MEM = (*task_iter)->getMem();
 					m_resourceMutex.lock();
-                    s= "Debug utilize before scheduling CPU "+ to_string(node_iter->second->getFreeCPU()) +" Mem "+ to_string(node_iter->second->getFreeMem())+ " Task needs CPU"+ to_string(CPU)+" Task needs Mem:" + to_string(MEM)   ;
-                        Logfile(s);
+                  
 					node_iter->second->decreaseCPU(CPU);
 					node_iter->second->decreaseMem(MEM);
-                                    s= "Debug utilize after scheduling CPU "+ to_string(node_iter->second->getFreeCPU()) +" Mem "+ to_string(node_iter->second->getFreeMem())+" Task needs CPU"+ to_string(CPU)+" Task needs Mem:" + to_string(MEM)  ;
-                                    Logfile(s);
-                                    PrintUtilization();
-					node_iter->second->vTasks.push_back(*task_iter);
+                                    
+                    node_iter->second->vTasks.push_back(*task_iter);
 					m_resourceMutex.unlock();
 					fit.push_back(*task_iter);
 				}
@@ -459,10 +448,7 @@ int DataCenter::ScheduleJob(Job *pJob) {
 			nodeMap[nodeId]->increaseCPU(Tcpu);
 			nodeMap[nodeId]->increaseMem(Tmem);
 			//removing task from node task list
-            s= "Debug utilize while failed";
-            Logfile(s);
-            PrintUtilization();
-			nodeMap[nodeId]->vTasks.erase(remove(nodeMap[nodeId]->vTasks.begin(), nodeMap[nodeId]->vTasks.end(), *t), \
+            nodeMap[nodeId]->vTasks.erase(remove(nodeMap[nodeId]->vTasks.begin(), nodeMap[nodeId]->vTasks.end(), *t), \
 					nodeMap[nodeId]->vTasks.end());
 
 			m_resourceMutex.unlock();
