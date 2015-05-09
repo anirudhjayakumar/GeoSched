@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "Job.h"
+#include <unordered_map>
 #define JOB_ID  		0
 #define JOB_ARRIVAL  	1
 #define JOB_SCHEDTIME  	2
@@ -15,6 +16,12 @@
 #define JOB_SLA1	  	9
 #define JOB_SLA2	  	10
 #define JOB_SLA3	  	11
+
+#define YEAR 0
+#define MONTH 1
+#define DAY 2
+#define HOUR 3
+#define DATA 4
 
 
 struct TraceItem
@@ -48,6 +55,28 @@ struct TraceItem
 
 };
 
+
+struct traceTE{
+    string year;
+    string month;
+    string day;
+    string hour;
+    string TE;
+    traceTE();
+    string parse(const std::string &sCSV);
+    
+    string getTE();
+    
+    
+};
+
+
+
+
+
+
+
+
 class GoogleTrace
 {
 private:
@@ -55,11 +84,26 @@ private:
 	std::vector<TraceItem>::iterator currIter;
 public:
 
-	int Initialize(const std::string &filePath, string name, int GMT);
+	int Initialize(const std::string &filePath, string name, int GMT, string path);
 	std::vector<TraceItem*> GetNextSet(INT64_ us, string name, int GMT);
 	bool  FileEnd();
 	int WriteToFile(const std::string &filePath);
+    int Logfile(string msg, string path);
+    };
+
+class TempElectric{
+  private:
+     std::map<string,int> vTempElectric;
+    std::vector<traceTE> traces;
+  public:
+    int Initialize(const std::string &filePath, string name, int GMT, string path);
+    double TempElectricNextHours(string date, int hour, int start);
+    int  Logfile(string msg, string path);
+    
+    
 };
+
+
 
 
 #endif /* GOOGLETRACE_H_ */

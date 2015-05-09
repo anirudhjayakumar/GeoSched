@@ -10,8 +10,10 @@
 #include "common.h"
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include "Job.h"
+
 using namespace std;
 
 
@@ -84,7 +86,7 @@ INT64_ TraceItem::ArrivalTime()
 Job* TraceItem::createJob(){
     //cout << "=====creating jobs " << nJobID << "  " << nTasks  << "======"<< endl; 
 	Job* nJob= new Job(nJobID, RunningTime(), nSchedClass, nTasks,fTotalCPU, fTotalMem );
-    cout << GenerateCSV() << endl;
+   // cout << GenerateCSV() << endl;
 	return nJob;
 
 }
@@ -135,7 +137,7 @@ std::string TraceItem::GenerateCSV()
 }
 
 
-int GoogleTrace::Initialize(const std::string &filePath, string name, int GMT)
+int GoogleTrace::Initialize(const std::string &filePath, string name, int GMT, string path)
 {
 
 	ifstream traceStream(filePath);
@@ -151,9 +153,29 @@ int GoogleTrace::Initialize(const std::string &filePath, string name, int GMT)
 	currIter = vTraceItems.begin();
     
 	traceStream.close();
-    cout<<name<<" Completed Workload tracing at "<<localtime(GMT)<<endl;
+    string s= name+ " Completed Workload tracing at "+ localtime(GMT);
+    Logfile(s,path);
 	return SUCCESS;
 }
+
+
+
+
+
+int GoogleTrace:: Logfile(string msg, string path)
+{
+    
+    std::fstream execTraces;
+    execTraces.open (path, std::fstream::in | std::fstream::out | std::fstream::app);
+    
+    execTraces << msg<<endl;
+    
+    execTraces.close();
+    
+    
+    return SUCCESS;
+}
+
 
 vector<TraceItem *> GoogleTrace::GetNextSet(INT64_ us, string name, int GMT)
 {
@@ -191,3 +213,142 @@ int GoogleTrace::WriteToFile(const std::string &filePath)
 	traceStream.close();
 	return SUCCESS;
 }
+traceTE::traceTE(){
+    
+}
+
+ 
+string traceTE:: parse(const std::string &sCSV){
+    vector<string> vTokens;
+    Tokenize(sCSV,',',vTokens);
+    char *pEnd;
+    if(!vTokens[YEAR].empty())
+        year= vTokens[YEAR].c_str();
+    
+    if(!vTokens[MONTH].empty())
+        month = vTokens[MONTH].c_str();
+    if(!vTokens[DAY].empty())
+        day = vTokens[DAY].c_str();
+    if(!vTokens[HOUR].empty())
+        hour = vTokens[HOUR].c_str();
+    if(!vTokens[DATA].empty())
+        TE = vTokens[DATA].c_str();
+    string date=year+month+day+hour;
+    return date;
+       
+
+    
+}
+string traceTE:: getTE(){
+    return TE;
+}
+
+int TempElectric::Initialize(const std::string &filePath, string name, int GMT, string path)
+{
+    string key, data;
+    ifstream traceStream(filePath);
+    string sLine;
+    
+    while(!traceStream.eof())
+    {
+        traceStream >> sLine;
+       // cout<<sLine;
+        
+        traceTE nDate;
+        key= nDate.parse(sLine);
+        data = nDate.getTE();
+       // cout<<"data "<<data<<endl;
+        //cout<<"key "<<key<<endl;
+        vTempElectric[key]= stoi(data);
+    }
+ 
+    
+    traceStream.close();
+    string s= name+ " Completed Temp/Electric tracing at "+ localtime(GMT);
+   Logfile(s,path);
+    return SUCCESS;
+}
+int TempElectric:: Logfile(string msg, string path)
+{
+    
+    std::fstream execTraces;
+    execTraces.open (path, std::fstream::in | std::fstream::out | std::fstream::app);
+    
+    execTraces << msg<<endl;
+    
+    execTraces.close();
+    
+    
+    return SUCCESS;
+}
+double TempElectric:: TempElectricNextHours(string date, int hour, int start){
+    std::map<string,int>:: iterator currTE;
+   
+    
+    int count = 0;
+    int total = 0;
+    string tempDate;
+    double avgTE;
+    
+   
+    vector<string> vTokens;
+    Tokenize(date,',',vTokens);
+
+    
+    
+    for(int i=start; (i<=23)&&(i<=start+hour);i++)
+    {
+        tempDate = vTokens[0] + vTokens[1]+ vTokens[2] + to_string(i);
+        currTE=vTempElectric.find(tempDate);
+        if(currTE!=vTempElectric.end()){
+          total+= currTE->second;
+          count++;
+        }
+    }
+    if(count!=hour){
+      
+        string day= vTokens[2];
+        int d= atoi(day .c_str()) +1;
+        
+        if(d<=31){
+          std::string temp = std::to_string(d);
+          date[(date.size())-1]=temp[0];
+          int rem=hour-count;
+          for(int i=0;i<rem;i++){
+            
+             tempDate = vTokens[0] + vTokens[1]+ temp + to_string(i);
+             currTE=vTempElectric.find(tempDate);
+             if(currTE!=vTempElectric.end()){
+                total+= currTE->second;
+                count++;
+             }
+            
+          }
+        }
+        else{
+          day="1";
+          string mo = vTokens[1];
+          int  m = atoi(mo.c_str()) +1;
+          std::string temp = std::to_string(m);
+          if(m<=12){
+            int rem=hour-count;
+            for(int i=0;i<rem;i++){
+              tempDate = vTokens[0]+temp+day+to_string(i);
+              currTE=vTempElectric.find(tempDate);
+              if(currTE!=vTempElectric.end()){
+                 total+= currTE->second;
+                 count++;
+               }
+                    
+             }
+          }
+        }
+    }
+    
+    avgTE = (double)total/(double)count;
+    return avgTE;
+   
+    
+}
+
+

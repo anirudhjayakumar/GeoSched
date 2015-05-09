@@ -34,14 +34,10 @@ void Barrier::Wait(int local_count)
 }
 
 void Barrier:: decrement(){
+    std::unique_lock<std::mutex> lock{_mutex};
     --_org_val;
 }
 
-void Log:: print(string s){
-    m_LogMutex.lock();
-    cout<<s;
-    m_LogMutex.unlock();
-}
 
 vector<string> &Tokenize(const string &s, char delim, vector<string> &elems)
 {

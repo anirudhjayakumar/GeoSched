@@ -24,7 +24,10 @@ public:
 	int SubmitJob(Job* pJob);
 	std::unordered_map<int,Node*> GetResourceData();
     void InformLeaving();
-    int GetName();
+    std::string GetName();
+    double          TemperatureNextHours(int hour);
+    double          ElectricityNextHours(int hour);
+    bool			isAirEco();
 private:
 	DataCenter *m_dc;
 };

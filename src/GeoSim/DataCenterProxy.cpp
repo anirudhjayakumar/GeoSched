@@ -23,32 +23,45 @@ DataCenterProxy::~DataCenterProxy() {
 int DataCenterProxy:: Initialize(DataCenter *dc)
 {
 	//cout<<"Creating Proxy\n";
-	 m_dc = dc;
+	m_dc = dc;
 	return SUCCESS;
 }
 
 int DataCenterProxy::SubmitJob(Job* pJob)
 {
-	
+
 	m_dc->AddJobsToWaitingList(pJob);
 	return SUCCESS;
 }
-int DataCenterProxy::GetName()
+string DataCenterProxy::GetName()
 {
-    
-    m_dc->GetName();
-    return SUCCESS;
+
+	return m_dc->GetName();
+
 }
+
 
 void DataCenterProxy::InformLeaving(){
-    
-    m_dc->decrementBarrier();
+
+	m_dc->decrementBarrier();
 }
 
 
+bool			DataCenterProxy::isAirEco()
+{
+	return m_dc->isAirEco();
+}
 
 std::unordered_map<int,Node*> DataCenterProxy:: GetResourceData()
 {
 	return m_dc->GetResourceData();
 	//return std::unordered_map<int,Node*>();
+}
+
+
+double DataCenterProxy:: TemperatureNextHours(int hour){
+	return m_dc->TemperatureNextHours(hour);
+}
+double DataCenterProxy::  ElectricityNextHours(int hour){
+	return m_dc->ElectricityNextHours( hour);
 }

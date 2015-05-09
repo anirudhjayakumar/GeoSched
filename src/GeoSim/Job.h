@@ -45,18 +45,23 @@ public:
 	Job(INT64_, INT64_, int,  int , double , double);
 	virtual ~Job();
 	INT64_ getJobID();
+    int setNodeID(int n);
+    int getNodeID();
 	int sClass();
 	INT64_ getCurrTime();
 	int  IncCurrTime(INT64_ timestamp);
 	std::vector<Task*> getTasks();
 	INT64_ GetTotalRunTime();
     // add required method
+	double   nCores;
 private:
 	std::vector<Task*> vTasks;
 	INT64_ nTotalRunTime;
 	INT64_ nCurrRunTime;
 	INT64_ nJobID;
+    int nodeID;
 	int    nSchedClass;
+	 //neeed for energy calc
 };
 
 #endif /* JOB_H_ */

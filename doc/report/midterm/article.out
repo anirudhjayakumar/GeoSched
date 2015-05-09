@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Related Work}{}% 1
+\BOOKMARK [1][-]{section.2}{Cloud Workload }{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Workload Traces}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Custom Trace Format}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Google Workload Trace}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Data Center Profiling }{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Geo-Distributed Data Center}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.2}{Profile Parameters}{section.3}% 8
+\BOOKMARK [3][-]{subsubsection.3.2.1}{Temperature}{subsection.3.2}% 9
+\BOOKMARK [3][-]{subsubsection.3.2.2}{Electricity Pricing}{subsection.3.2}% 10
+\BOOKMARK [3][-]{subsubsection.3.2.3}{Energy Source}{subsection.3.2}% 11
+\BOOKMARK [3][-]{subsubsection.3.2.4}{Case Study: Google Data Centers}{subsection.3.2}% 12
+\BOOKMARK [1][-]{section.4}{Scheduler simulator}{}% 13
+\BOOKMARK [2][-]{subsection.4.1}{Components}{section.4}% 14
+\BOOKMARK [3][-]{subsubsection.4.1.1}{Component Interaction}{subsection.4.1}% 15
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 16
+\BOOKMARK [1][-]{section.6}{ Milestones}{}% 17

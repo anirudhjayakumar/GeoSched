@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>900635A2-8A49-40E6-83A9-331ED47AB45A</string>
+	<key>IDESourceControlProjectName</key>
+	<string>GeoSim</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>321C8E4D5A8FB0D0380A70E91B9488FCEBA662F6</key>
+		<string>https://bitbucket.org/anirudhnair/geosched.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>GeoSim/GeoSim.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>321C8E4D5A8FB0D0380A70E91B9488FCEBA662F6</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://bitbucket.org/anirudhnair/geosched.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>321C8E4D5A8FB0D0380A70E91B9488FCEBA662F6</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>321C8E4D5A8FB0D0380A70E91B9488FCEBA662F6</string>
+			<key>IDESourceControlWCCName</key>
+			<string>geosched</string>
+		</dict>
+	</array>
+</dict>
+</plist>
