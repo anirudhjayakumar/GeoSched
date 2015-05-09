@@ -19,6 +19,7 @@
 #include "common.h"
 #include <chrono>
 #include <ctime>
+#include <fstream>
 
 class DataCenterProxy; //forward declare
 class Node;
@@ -82,6 +83,7 @@ private:
     double				m_TotalEnergy;
     std::chrono::system_clock::time_point startPoint;
     INT64_ 				arrivalTime;
+    std::fstream 		execTraces;
 private:
     bool				CheckDCFit(Job *,NodeMap &);
 	void 				StartSimulation(); //main scheduling logic goes in here

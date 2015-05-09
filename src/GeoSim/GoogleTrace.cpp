@@ -346,7 +346,6 @@ double TempElectric:: TempElectricNextHours(string date, int hour, int start){
     }
     
     avgTE = (double)total/(double)count;
-    
     return avgTE;
    
     

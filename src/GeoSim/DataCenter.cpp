@@ -54,6 +54,7 @@ DataCenter::DataCenter(int id, const std::string &workloadPath, Barrier *pBarrie
 
 DataCenter::~DataCenter() {
 	// TODO Auto-generated destructor stub
+	 execTraces.close();
 }
 
 double 	DataCenter::isAirEco()
@@ -103,7 +104,7 @@ int DataCenter::Initialize(DataCenterProxy * dataCenterProxies,
     m_workLoad.Initialize(m_sWorkloadTrace, name, m_GMT, m_ExecutionTraces);
     m_Temp.Initialize(m_TempTrace, name, m_GMT, m_ExecutionTraces);
     m_Electric.Initialize(m_ElecTrace, name, m_GMT, m_ExecutionTraces);
- 
+    execTraces.open (m_ExecutionTraces, std::fstream::in | std::fstream::out | std::fstream::app);
 
 	return SUCCESS;
 }
@@ -129,6 +130,7 @@ void DataCenter::GetUtilization(double &cpu_util,int &free_cpu, int &total_cpu) 
     double pMem;
     string s;
     
+    m_resourceMutex.lock();
     for (auto node_iter = nodeMap.begin(); node_iter != nodeMap.end();
          ++node_iter) {
         
@@ -138,7 +140,7 @@ void DataCenter::GetUtilization(double &cpu_util,int &free_cpu, int &total_cpu) 
         totalCpu+= node_iter->second->getTotalCPU();
         totalMem+= node_iter->second->getTotalMem();
     }
-    
+    m_resourceMutex.unlock();
     
     useCpu = totalCpu - freeCpu;
 
@@ -150,7 +152,7 @@ void DataCenter::GetUtilization(double &cpu_util,int &free_cpu, int &total_cpu) 
     cpu_util = pCpu;
     free_cpu = freeCpu;
     total_cpu = totalCpu;
-    s = name+ " CPU Utilization: "+ to_string(pCpu) +"% Memory Utilization: "+ to_string(pMem)+"%";
+    s = name + "Time: " + to_string(arrivalTime) + " CPU Utilization: "+ to_string(pCpu) +"% Memory Utilization: "+ to_string(pMem)+"%";
     Logfile(s);
 
     
@@ -191,15 +193,9 @@ GoogleTrace* DataCenter::getWorkLoad() {
 
 int DataCenter:: Logfile(string msg)
 {
-  
-    std::fstream execTraces;
-    execTraces.open (m_ExecutionTraces, std::fstream::in | std::fstream::out | std::fstream::app);
-    
-    execTraces << msg<<endl;
-    
-    execTraces.close();
 
-    
+    execTraces << msg<<endl;
+
     return SUCCESS;
     
 }
@@ -215,7 +211,12 @@ double DataCenter:: TemperatureNextHours(int hour)
 	std::tm tm = std::tm{0};
 	gmtime_r(&tt, &tm);
 	string date = to_string(tm.tm_year+1900) + "," + to_string(tm.tm_mon + 1) + "," + to_string(tm.tm_mday);
-    return m_Temp.TempElectricNextHours(date, hour, tm.tm_hour);
+
+    double temp = m_Temp.TempElectricNextHours(date, hour, tm.tm_hour);
+    string log = "TemperatureNextHours: " + date + " hour:" + to_string(tm.tm_hour) + " count:" + to_string(hour)
+    				+ " temperature: " + to_string(temp);
+    Logfile(log);
+    return temp;
     
 }
 
@@ -228,8 +229,11 @@ double DataCenter:: ElectricityNextHours( int hour){
 	std::tm tm = std::tm{0};
 	gmtime_r(&tt, &tm);
 	string date = to_string(tm.tm_year+1900) + "," + to_string(tm.tm_mon + 1) + "," + to_string(tm.tm_mday);
-	return m_Electric.TempElectricNextHours(date, hour, tm.tm_hour);
-    
+	double elec = m_Electric.TempElectricNextHours(date, hour, tm.tm_hour);
+	string log = "ElectricityNextHours: " + date + " hour:" + to_string(tm.tm_hour) + " count:" + to_string(hour)
+	    				+ " Electricty: " + to_string(elec);
+	Logfile(log);
+	return elec;
 }
 
 
@@ -297,6 +301,11 @@ void DataCenter::StartSimulation() {
             //PrintUtilization();
 		}
 
+		if(arrivalTime % ENERGY_CALC_INTERVAL == 0)
+		{
+			UpdateEnergyCost();
+		}
+
 		s =name + " Waiting at "+ getLocalTime();
         Logfile(s);
         
@@ -306,7 +315,7 @@ void DataCenter::StartSimulation() {
 		
 		// barrier: all threads stop here before proceeding
         
-        cout<<"Cycle Count "<<cycle_count<<endl;
+        if(nDCid == 0) cout<<"Cycle Count "<<cycle_count<<endl;
         cycle_count++;
 	}
     
@@ -637,7 +646,9 @@ void DataCenter::UpdateEnergyCost()
 	double total_cost = total_energy/(1000000*elec_cost);
 	m_TotalCost+=total_cost;
 	m_TotalEnergy+=total_energy;
-
+	string log = "Energy:" + to_string(total_energy) + " Total Energy:" + to_string(m_TotalEnergy) + " Cost:" \
+			+ to_string(total_cost) + " Total Cost:" + to_string(m_TotalCost);
+	Logfile(log);
 }
 
 
