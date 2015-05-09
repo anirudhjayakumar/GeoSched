@@ -83,13 +83,13 @@ int main()
 	singapore.Initialize(dcProxy,&oAccessor);
 	oregon.Initialize(dcProxy,&oAccessor);
     iowa.Initialize(dcProxy,&oAccessor);
-   /*
-    temp and electricity
-    cout<<"Chile Temp: "<<chile.TemperatureNextHours("201313",17)<<endl;
-    cout<<"Finland Temp"<<finland.TemperatureNextHours("201313",5)<<endl;
-    cout<<"Chile.Elec:= "<<chile.ElectricityNextHours("201313",5)<<endl;
-    cout<<"Chile.Elec:= "<<chile.ElectricityNextHours("201313",5)<<endl;
-    */
+   
+   /* temp and electricity*/
+    cout<<"Chile Temp: "<<chile.TemperatureNextHours("2013,1,31",17)<<endl;
+    cout<<"Finland Temp"<<finland.TemperatureNextHours("2013,1,3",5)<<endl;
+    cout<<"Chile.Elec:= "<<chile.ElectricityNextHours("2013,1,3",5)<<endl;
+    cout<<"Chile.Elec:= "<<chile.ElectricityNextHours("2013,1,3",5)<<endl;
+    
     
     
     chile.UpdateResourceData();

@@ -10,6 +10,7 @@
 #include "common.h"
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include "Job.h"
 
@@ -282,16 +283,22 @@ int TempElectric:: Logfile(string msg, string path)
 }
 double TempElectric:: TempElectricNextHours(string date, int hour, int start){
     std::map<string,int>:: iterator currTE;
-   // cout<<"from local  "<< date<<endl;
+   
     
     int count = 0;
     int total = 0;
     string tempDate;
     double avgTE;
     
+   
+    vector<string> vTokens;
+    Tokenize(date,',',vTokens);
+
+    
+    
     for(int i=start; (i<=23)&&(i<=start+hour);i++)
     {
-        tempDate = date + to_string(i);
+        tempDate = vTokens[0] + vTokens[1]+ vTokens[2] + to_string(i);
         currTE=vTempElectric.find(tempDate);
         if(currTE!=vTempElectric.end()){
           total+= currTE->second;
@@ -299,27 +306,49 @@ double TempElectric:: TempElectricNextHours(string date, int hour, int start){
         }
     }
     if(count!=hour){
-        char s=date[(date.size())-1];
-        int a= atoi(&s)+1;
-        std::string temp = std::to_string(a);
-        date[(date.size())-1]=temp[0];
-        int rem=hour-count;
-        for(int i=0;i<rem;i++){
+      
+        string day= vTokens[2];
+        int d= atoi(day .c_str()) +1;
+        
+        if(d<=31){
+          std::string temp = std::to_string(d);
+          date[(date.size())-1]=temp[0];
+          int rem=hour-count;
+          for(int i=0;i<rem;i++){
             
-            tempDate = date + to_string(i);
-            currTE=vTempElectric.find(tempDate);
-            if(currTE!=vTempElectric.end()){
+             tempDate = vTokens[0] + vTokens[1]+ temp + to_string(i);
+             currTE=vTempElectric.find(tempDate);
+             if(currTE!=vTempElectric.end()){
                 total+= currTE->second;
                 count++;
-            }
+             }
             
+          }
         }
-     }
-    avgTE = (double)total/(double)hour;
-    if(count==hour)
-     return avgTE;
-    else
-        return FAIL;
+        else{
+          day="1";
+          string mo = vTokens[1];
+          int  m = atoi(mo.c_str()) +1;
+          std::string temp = std::to_string(m);
+          if(m<=12){
+            int rem=hour-count;
+            for(int i=0;i<rem;i++){
+              tempDate = vTokens[0]+temp+day+to_string(i);
+              currTE=vTempElectric.find(tempDate);
+              if(currTE!=vTempElectric.end()){
+                 total+= currTE->second;
+                 count++;
+               }
+                    
+             }
+          }
+        }
+    }
+    
+    avgTE = (double)total/(double)count;
+    
+    return avgTE;
+   
     
 }
 
