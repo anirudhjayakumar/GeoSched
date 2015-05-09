@@ -24,7 +24,7 @@ public:
 	int SubmitJob(Job* pJob);
 	std::unordered_map<int,Node*> GetResourceData();
     void InformLeaving();
-    int GetName();
+    std::string GetName();
 private:
 	DataCenter *m_dc;
 };

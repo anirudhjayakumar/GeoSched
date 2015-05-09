@@ -51,6 +51,17 @@ INT64_ Job:: getJobID(){
 	return nJobID;
 }
 
+int Job:: setNodeID(int n){
+    nodeID = n;
+    return SUCCESS;
+    
+}
+
+int Job:: getNodeID(){
+    return nodeID;
+    
+}
+
 int Job::sClass(){
 	return nSchedClass;
 }

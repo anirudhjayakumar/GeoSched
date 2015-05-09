@@ -33,7 +33,7 @@ typedef std::unordered_map<int,Node*>                NodeMap;
 class Job;
 class DataCenter {
 public:
-	DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string name, int gmtDiff);
+	DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string name, int gmtDiff, string traces);
 	virtual ~DataCenter();
 	int 			Initialize(DataCenterProxy * dataCenterProxies, ConfigAccessor *pAccessor);
 	void 			AddJobsToWaitingList(Job *pJob);
@@ -77,7 +77,10 @@ private:
 	std::list<Job*> 	GetWaitingJobs();
     string              localtime(int gmtDiff);
     string              name;
-     Log                 L;
+    Log                 L;
+    string              m_ExecutionTraces;
+    int Logfile(string msg);
+   
    
 };
 

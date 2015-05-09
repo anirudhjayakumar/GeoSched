@@ -29,6 +29,8 @@ public:
 	int decreaseCPU(int cpu);
 	int increaseMem(int mem);
     int decreaseMem(int mem);
+    int getTotalCPU();
+    int getTotalMem();
 
 
 };

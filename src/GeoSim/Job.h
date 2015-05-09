@@ -45,6 +45,8 @@ public:
 	Job(INT64_, INT64_, int,  int , double , double);
 	virtual ~Job();
 	INT64_ getJobID();
+    int setNodeID(int n);
+    int getNodeID();
 	int sClass();
 	INT64_ getCurrTime();
 	int  IncCurrTime(INT64_ timestamp);
@@ -56,6 +58,7 @@ private:
 	INT64_ nTotalRunTime;
 	INT64_ nCurrRunTime;
 	INT64_ nJobID;
+    int nodeID;
 	int    nSchedClass;
 };
 

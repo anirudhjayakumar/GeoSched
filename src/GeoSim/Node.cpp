@@ -18,9 +18,15 @@ int nTotalCPU;
 	int nNodeID;
 	std::vector<Task*> vTasks;
 
-	int Node:: getFreeCPU(){
+int Node:: getFreeCPU(){
 		return nFreeCPU;
-	}
+}
+int Node:: getTotalCPU(){
+    return nTotalCPU;
+}
+int Node:: getTotalMem(){
+    return nTotalMem;
+}
 	int Node:: getFreeMem(){
 		return nFreeMem;
 	}

@@ -24,18 +24,20 @@ using namespace std;
 
 const string machineConfig("/Users/harshitdokania/Desktop/cs525/geosched/datacenters/machine_config.csv");
 
-DataCenter::DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string n, int gmtDiff) {
+DataCenter::DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string n, int gmtDiff, string tracepath) {
 	// TODO Auto-generated constructor stub
 	nDCid = id;
 	m_sWorkloadTrace = workloadPath;
 	m_pBarrier = pBarrier;
     name = n;
     m_GMT = gmtDiff;
-    
-    string s= "Started creating " + name + " DataCenter at " +getLocalTime() + "\n";
-    L.print(s);
+    m_ExecutionTraces = tracepath;
 
-}
+    
+    string s= "Started creating " + name + " DataCenter at " +getLocalTime();
+   
+    Logfile(s);
+   }
 
 DataCenter::~DataCenter() {
 	// TODO Auto-generated destructor stub
@@ -75,14 +77,13 @@ int DataCenter::Initialize(DataCenterProxy * dataCenterProxies,
 		}
 	}
 	m_mapDCtoResource[nDCid] = mapNodes;
-    string s= "Completed creating "+ name +" DataCenter at "+ getLocalTime()+"\n";
-    L.print(s);
-    
-    
+    string s= "Completed creating "+ name +" DataCenter at "+ getLocalTime();
+    s= "Debug utilize while creating ";
+    Logfile(s);
+    PrintUtilization();
 
-	
-
-	m_workLoad.Initialize(m_sWorkloadTrace, name, m_GMT);
+    Logfile(s);
+    m_workLoad.Initialize(m_sWorkloadTrace, name, m_GMT, m_ExecutionTraces);
 
 	return SUCCESS;
 }
@@ -97,6 +98,43 @@ void DataCenter::AddJobsToWaitingList(Job *pJob) {
 }
 
 void DataCenter::PrintUtilization() {
+    NodeMap &nodeMap = m_mapDCtoResource[nDCid];
+    INT64_ totalCpu(0);
+    INT64_ freeCpu(0);
+    INT64_ useCpu(0);
+    INT64_ totalMem(0);
+    INT64_ freeMem(0);
+    INT64_ useMem(0);
+    double pCpu;
+    double pMem;
+
+    
+    for (auto node_iter = nodeMap.begin(); node_iter != nodeMap.end();
+         ++node_iter) {
+        
+
+        freeCpu+= node_iter->second->getFreeCPU();
+        freeMem+= node_iter->second->getFreeMem();
+        totalCpu+= node_iter->second->getTotalCPU();
+        totalMem+= node_iter->second->getTotalMem();
+    }
+    
+    string s = name+ " Total CPU  "+ to_string(totalCpu) +"Total Memory: "+ to_string(totalMem);
+    Logfile(s);
+     s = name+ " Free CPU  "+ to_string(freeCpu) +"Free Memory: "+ to_string(freeMem);
+    Logfile(s);
+
+    useCpu = totalCpu - freeCpu;
+    useMem = totalMem - freeMem;
+    s = name+ " Use CPU  "+ to_string(useCpu) +"Use Memory: "+ to_string(useMem);
+    Logfile(s);
+
+    pCpu=((double)useCpu / (double)totalCpu)*100;
+    pMem=((double)useMem / (double)totalMem)*100;
+    s = name+ " CPU Utilization: "+ to_string(pCpu) +" Memory Utilization: "+ to_string(pMem);
+    Logfile(s);
+
+    
 	return;
 }
 
@@ -120,8 +158,8 @@ Barrier* DataCenter:: getBarrier(){
 
 
 NodeMap DataCenter::GetResourceData() {
-   // string s = name + " Getting resource data at " +getLocalTime()+"\n";
-    //L.print(s);
+    string s = name + " Getting resource data at " +getLocalTime()+"\n";
+    Logfile(s);
 	m_resourceMutex.lock();
 	NodeMap nodeMap = m_mapDCtoResource[nDCid];
 	m_resourceMutex.unlock();
@@ -132,33 +170,55 @@ GoogleTrace* DataCenter::getWorkLoad() {
 	return &m_workLoad;
 }
 
+int DataCenter:: Logfile(string msg)
+{
+  
+    std::fstream execTraces;
+    execTraces.open (m_ExecutionTraces, std::fstream::in | std::fstream::out | std::fstream::app);
+    
+    execTraces << msg<<endl;
+    
+    execTraces.close();
+
+    
+    return SUCCESS;
+    
+}
+
+
+
+
+
 void DataCenter::StartSimulation() {
 
-	string s =name + " Entered Simulation at "+getLocalTime()+"\n";
-     L.print(s);
+	string s =name + " Entered Simulation at "+getLocalTime();
+    Logfile(s);
 	INT64_ arrivalTime = TIMEINC;
     int cycle_count = 1;
 	// loop till the time there are jobs left in the trace
 	// or till the time all jobs complete running.
+  
 	while (!m_workLoad.FileEnd() || m_vRunningJobs.size()) {
 		/* Take load for this interval */
 
         
         vector<TraceItem*> currLoad = m_workLoad.GetNextSet(arrivalTime, name, m_GMT);
 		if (currLoad.size()) {
-            s= "Job Arrival at "+ name+ " size: "+to_string(currLoad.size()) +"time: "+ getLocalTime()+"\n";
-           L.print(s);
+            s= "Job Arrival at "+ name+ " size: "+to_string(currLoad.size()) +" time: "+ getLocalTime()+"\n";
+            Logfile(s);
 			for (auto it = currLoad.begin(); it != currLoad.end(); it++) {
 				//
 				Job* pJob = (*it)->createJob();
 
 				/* high sensitive jobs put in my own queue */
 				if (pJob->sClass() == 2 || pJob->sClass() == 3) {
-                    cout<<"High sensitive jobs at "<<name<< "time: "<<getLocalTime()<<endl;
+                    s="High sensitive jobs at " + name + "time: "+ getLocalTime();
+                    Logfile(s);
 					
 					AddJobsToWaitingList(pJob); // schedule during schedule phase
 				} else {
-                    cout<<name<< "Checking resource available at time: "<<getLocalTime()<<endl;
+                    s= name + " Checking resource available at time: "+getLocalTime();
+                    Logfile(s);
 					auto vecDCs = GetDCSchedulable(pJob);
 					
 					MetaSchedJobToDC(vecDCs, pJob);
@@ -188,18 +248,26 @@ void DataCenter::StartSimulation() {
 		arrivalTime += TIMEINC;
 		if (arrivalTime % RESOURCE_SYNC_TIME == 0) {
 			UpdateResourceData();
+            PrintUtilization();
 		}
 
-		cout << "DC waits " << nDCid << endl;
-		m_pBarrier->Wait(cycle_count);
-		cout << "DC resumes " << nDCid << endl;
+		s =name + " Waiting at "+ getLocalTime();
+        Logfile(s);
+        
+        m_pBarrier->Wait(cycle_count);
+        s =name + " Resuming at "+ getLocalTime();
+        Logfile(s);
+		
 		// barrier: all threads stop here before proceeding
+        
+        cout<<"Cycle Count "<<cycle_count<<endl;
         cycle_count++;
 	}
     
     DecreaseBarrier();
-    cout << "DC exits " << nDCid << endl;
-	return;
+    s =name + " Leaving simulation at"+ getLocalTime();
+    Logfile(s);
+   	return;
 }
 
 void DataCenter::  decrementBarrier(){
@@ -211,16 +279,21 @@ void DataCenter::MetaSchedJobToDC(std::vector<int> vecDCs, Job* pJob)
 {
 	// will be replaced with advanced algo. for now choose random dc id and send job
 	int dc_id = rand() % vecDCs.size();
-    cout<<name<<" Scheduling jobs on "<<m_dataCenterProxies[dc_id].GetName()<<"time: "<<getLocalTime()<<endl;
+    string s= name+ " Scheduling jobs on "+ m_dataCenterProxies[dc_id].GetName()+ " time: " +getLocalTime();
+    Logfile(s);
 	m_dataCenterProxies[dc_id].SubmitJob(pJob);
 }
 
 void DataCenter:: DecreaseBarrier(){
     for (int i = 0; i < DC_COUNT; i++) {
-        if (i != nDCid)
+        if (i != nDCid){
             m_dataCenterProxies[i].InformLeaving();
+            string s= name+ " Decreasing Barrier on "+ m_dataCenterProxies[i].GetName()+ " time: " +getLocalTime();
+            Logfile(s);
+        }
     }
 }
+
 
 vector<int> DataCenter::GetDCSchedulable(Job *pJob)
 {
@@ -238,7 +311,7 @@ string DataCenter:: GetName(){
 
 void DataCenter::ProgressRunningJobs() {
 	NodeMap &availResource = m_mapDCtoResource[nDCid];
-	
+    string s;
     list<Job*>::iterator j = m_vRunningJobs.begin();
     while (j != m_vRunningJobs.end())
     {
@@ -246,7 +319,9 @@ void DataCenter::ProgressRunningJobs() {
 		Job* pJob = *j;
 		pJob->IncCurrTime(TIMEINC);
 		if (pJob->GetTotalRunTime() <= pJob->getCurrTime()) {
-            cout <<"Job Completed at "<<name<<" time: "<<getLocalTime()<<endl;
+            s="Job Completed at "+ name+ " time: "+getLocalTime();
+            Logfile(s);
+            
             std::vector<Task*> Tasks = pJob->getTasks();
 			// iterate through each task and reclaim the node resource
 			// also remove task from node's task list
@@ -259,15 +334,20 @@ void DataCenter::ProgressRunningJobs() {
 				m_resourceMutex.lock();
 				availResource[nodeId]->increaseCPU(Tcpu);
 				availResource[nodeId]->increaseMem(Tmem);
-                cout<<name<<" Free the resource and delete tasks "<<getLocalTime()<<endl;
-                				//removing task from node task list
+                s= "Debug utilize while finished ";
+                Logfile(s);
+                PrintUtilization();
+                              				//removing task from node task list
 				availResource[nodeId]->vTasks.erase(remove(availResource[nodeId]->vTasks.begin(), availResource[nodeId]->vTasks.end(), *t), availResource[nodeId]->vTasks.end());
                
+
 				m_resourceMutex.unlock();
 
 			}
 			delete pJob;
 			j = m_vRunningJobs.erase(j);
+             s = name + " Freed the resource and deleted tasks "+ getLocalTime();
+            Logfile(s);
 		}
         else
         {
@@ -283,8 +363,8 @@ void DataCenter::UpdateResourceData() {
 		if (i != nDCid)
 			m_mapDCtoResource[i] = m_dataCenterProxies[i].GetResourceData();
 	}
-    string s = name + " Completed Updating Resource at " + getLocalTime()+"\n";
-    L.print(s);
+    string s = name + " Completed Updating Resource at " + getLocalTime();
+    Logfile(s);
 }
 
 void DataCenter::Join() {
@@ -320,6 +400,8 @@ bool DataCenter::CheckDCFit(Job *pJob, NodeMap &nodeMap) {
 int DataCenter::ScheduleJob(Job *pJob) {
 	NodeMap &nodeMap = m_mapDCtoResource[nDCid];
 	vector<Task*> fit;
+    string s;
+   
 	vector<Task *> vTasks = pJob->getTasks();
 	for (auto node_iter = nodeMap.begin(); node_iter != nodeMap.end();
 			++node_iter) {
@@ -336,8 +418,13 @@ int DataCenter::ScheduleJob(Job *pJob) {
 					int CPU = (*task_iter)->getCpu();
 					int MEM = (*task_iter)->getMem();
 					m_resourceMutex.lock();
+                    s= "Debug utilize before scheduling CPU "+ to_string(node_iter->second->getFreeCPU()) +" Mem "+ to_string(node_iter->second->getFreeMem())+ " Task needs CPU"+ to_string(CPU)+" Task needs Mem:" + to_string(MEM)   ;
+                        Logfile(s);
 					node_iter->second->decreaseCPU(CPU);
 					node_iter->second->decreaseMem(MEM);
+                                    s= "Debug utilize after scheduling CPU "+ to_string(node_iter->second->getFreeCPU()) +" Mem "+ to_string(node_iter->second->getFreeMem())+" Task needs CPU"+ to_string(CPU)+" Task needs Mem:" + to_string(MEM)  ;
+                                    Logfile(s);
+                                    PrintUtilization();
 					node_iter->second->vTasks.push_back(*task_iter);
 					m_resourceMutex.unlock();
 					fit.push_back(*task_iter);
@@ -346,15 +433,20 @@ int DataCenter::ScheduleJob(Job *pJob) {
 		}
 
 		if (fit.size() == vTasks.size()) {
-			break; // no more nodes needed to be checked
+            pJob->setNodeID(node_iter->second->getNodeID());
+           
+            break; // no more nodes needed to be checked
 		}
 	}
 
 	if (fit.size() == vTasks.size()) {
-
+        
+       
 		m_vRunningJobs.push_back(pJob);
+        s= name + " Running Job " + to_string(pJob->getJobID())+ " at Node Id " + to_string(pJob->getNodeID())+ " time: " + getLocalTime();
+        Logfile(s);
 		RemoveJobFromWaitingQueue(pJob);
-		//cout << "Finnished scheduling job " << pJob->getJobID() << endl;
+		
 	}
 	else {
 		// remove assigned tasks from nodes and reclaim resources
@@ -367,13 +459,19 @@ int DataCenter::ScheduleJob(Job *pJob) {
 			nodeMap[nodeId]->increaseCPU(Tcpu);
 			nodeMap[nodeId]->increaseMem(Tmem);
 			//removing task from node task list
+            s= "Debug utilize while failed";
+            Logfile(s);
+            PrintUtilization();
 			nodeMap[nodeId]->vTasks.erase(remove(nodeMap[nodeId]->vTasks.begin(), nodeMap[nodeId]->vTasks.end(), *t), \
 					nodeMap[nodeId]->vTasks.end());
 
 			m_resourceMutex.unlock();
 
 		}
-	//	cout << "Unable to schedule job " << pJob->getJobID() << endl;
+        s= name + "Unable to schedule job" + to_string(pJob->getJobID())+" time: " + getLocalTime();
+        Logfile(s);
+
+	
 	}
 	return SUCCESS;
 }
@@ -425,7 +523,7 @@ string DataCenter:: localtime(int i){
     }
     Time+=to_string((ptm->tm_min));
     Time+=":";
-    if((ptm->tm_sec)<9){
+    if((ptm->tm_sec)<=9){
         Time+="0" ;
     }
     Time+=to_string((ptm->tm_sec));

@@ -34,6 +34,7 @@ void Barrier::Wait(int local_count)
 }
 
 void Barrier:: decrement(){
+    std::unique_lock<std::mutex> lock{_mutex};
     --_org_val;
 }
 

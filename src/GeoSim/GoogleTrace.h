@@ -55,11 +55,13 @@ private:
 	std::vector<TraceItem>::iterator currIter;
 public:
 
-	int Initialize(const std::string &filePath, string name, int GMT);
+	int Initialize(const std::string &filePath, string name, int GMT, string path);
 	std::vector<TraceItem*> GetNextSet(INT64_ us, string name, int GMT);
 	bool  FileEnd();
 	int WriteToFile(const std::string &filePath);
-};
+    int Logfile(string msg, string path);
+    };
+
 
 
 #endif /* GOOGLETRACE_H_ */

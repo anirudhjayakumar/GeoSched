@@ -84,7 +84,7 @@ INT64_ TraceItem::ArrivalTime()
 Job* TraceItem::createJob(){
     //cout << "=====creating jobs " << nJobID << "  " << nTasks  << "======"<< endl; 
 	Job* nJob= new Job(nJobID, RunningTime(), nSchedClass, nTasks,fTotalCPU, fTotalMem );
-    cout << GenerateCSV() << endl;
+   // cout << GenerateCSV() << endl;
 	return nJob;
 
 }
@@ -135,7 +135,7 @@ std::string TraceItem::GenerateCSV()
 }
 
 
-int GoogleTrace::Initialize(const std::string &filePath, string name, int GMT)
+int GoogleTrace::Initialize(const std::string &filePath, string name, int GMT, string path)
 {
 
 	ifstream traceStream(filePath);
@@ -151,9 +151,25 @@ int GoogleTrace::Initialize(const std::string &filePath, string name, int GMT)
 	currIter = vTraceItems.begin();
     
 	traceStream.close();
-    cout<<name<<" Completed Workload tracing at "<<localtime(GMT)<<endl;
+    string s= name+ " Completed Workload tracing at "+ localtime(GMT);
+    Logfile(s,path);
 	return SUCCESS;
 }
+
+int GoogleTrace:: Logfile(string msg, string path)
+{
+    
+    std::fstream execTraces;
+    execTraces.open (path, std::fstream::in | std::fstream::out | std::fstream::app);
+    
+    execTraces << msg<<endl;
+    
+    execTraces.close();
+    
+    
+    return SUCCESS;
+}
+
 
 vector<TraceItem *> GoogleTrace::GetNextSet(INT64_ us, string name, int GMT)
 {

@@ -13,10 +13,15 @@
 #include "ConfigAccessor.h"
 using namespace std;
 const string workload_chile("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_1.csv");
-const string workload_finland("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_1.csv");
-const string workload_singapore("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_1.csv");
-const string workload_oregon("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_1.csv");
-const string workload_iowa("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_1.csv");
+const string workload_finland("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_2.csv");
+const string workload_singapore("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_3.csv");
+const string workload_oregon("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_4.csv");
+const string workload_iowa("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_5.csv");
+const string output_chile("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/chile.trace");
+const string output_finland("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/finalnd.trace");
+const string output_singapore("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/singapore.trace");
+const string output_oregon("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/oregon.trace");
+const string output_iowa("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/iowa.trace");
 const string config_xml("config.xml");
 
 
@@ -31,11 +36,11 @@ int main()
 	
 	Barrier oBarrier(DC_COUNT);
 
-	DataCenter chile(CHILE, workload_chile,&oBarrier, "Chile", -3);
-	DataCenter finland(FINLAND, workload_finland,&oBarrier, "Finland",3);
-	DataCenter singapore(SINGAPORE, workload_singapore,&oBarrier, "Singapore", -4);
-	DataCenter oregon(OREGON, workload_oregon,&oBarrier, "Oregon", -7);
-	DataCenter iowa(IOWA, workload_iowa,&oBarrier,"Iowa", -5);
+	DataCenter chile(CHILE, workload_chile,&oBarrier, "Chile", -3, output_chile);
+	DataCenter finland(FINLAND, workload_finland,&oBarrier, "Finland",3, output_finland);
+	DataCenter singapore(SINGAPORE, workload_singapore,&oBarrier, "Singapore", -4, output_singapore);
+	DataCenter oregon(OREGON, workload_oregon,&oBarrier, "Oregon", -7, output_oregon);
+	DataCenter iowa(IOWA, workload_iowa,&oBarrier,"Iowa", -5, output_iowa);
 	
     
     

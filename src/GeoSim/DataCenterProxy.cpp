@@ -33,11 +33,11 @@ int DataCenterProxy::SubmitJob(Job* pJob)
 	m_dc->AddJobsToWaitingList(pJob);
 	return SUCCESS;
 }
-int DataCenterProxy::GetName()
+string DataCenterProxy::GetName()
 {
     
-    m_dc->GetName();
-    return SUCCESS;
+    return m_dc->GetName();
+    
 }
 
 void DataCenterProxy::InformLeaving(){
