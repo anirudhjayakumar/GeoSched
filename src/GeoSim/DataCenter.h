@@ -33,7 +33,7 @@ typedef std::unordered_map<int,Node*>                NodeMap;
 class Job;
 class DataCenter {
 public:
-	DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string name, int gmtDiff, string traces);
+	DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string name, int gmtDiff, const  string &traces,const string &tempPath, const string &elecPath);
 	virtual ~DataCenter();
 	int 			Initialize(DataCenterProxy * dataCenterProxies, ConfigAccessor *pAccessor);
 	void 			AddJobsToWaitingList(Job *pJob);
@@ -50,6 +50,8 @@ public:
     string          GetName();
     Barrier*        getBarrier();
     void            decrementBarrier();
+    double          TemperatureNextHours(string date, int hour);
+    double          ElectricityNextHours(string date, int hour);
 
 
 private:
@@ -63,7 +65,11 @@ private:
 	std::list<Job*>  	m_vRunningJobs;
 	std::list<Job*>  	m_vWaitingJobs;
 	GoogleTrace 		m_workLoad;
-	std::string			m_sWorkloadTrace;
+    TempElectric        m_Temp;
+    TempElectric        m_Electric;
+    std::string			m_sWorkloadTrace;
+    std::string			m_TempTrace;
+    std::string			m_ElecTrace;
 	Barrier				*m_pBarrier;
 	ConfigAccessor      *m_pAccessor;
     int                 m_GMT;
@@ -76,9 +82,11 @@ private:
 	void 				RemoveJobFromWaitingQueue(Job*);
 	std::list<Job*> 	GetWaitingJobs();
     string              localtime(int gmtDiff);
+    string              localhour(int i);
     string              name;
     string              m_ExecutionTraces;
     int Logfile(string msg);
+    
    
    
 };

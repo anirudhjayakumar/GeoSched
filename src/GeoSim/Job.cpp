@@ -20,8 +20,8 @@ Job::Job(INT64_ id, INT64_ runtime, int sClass, int tasks, double cpu, double me
    nSchedClass = sClass;
    nTotalRunTime = runtime;
    nCurrRunTime = 0;
-   double myCpu = cpu/tasks;
-   double myMem = mem/tasks;
+   int myCpu = (cpu-1)/tasks +1;
+   int myMem = (mem-1)/tasks +1;
    for(int i=0; i<tasks ; i++){
 	   Task *t= new Task();
 	   t->setMem(myMem);

@@ -12,6 +12,7 @@
 #include <fstream>
 #include <iostream>
 #include "Job.h"
+
 using namespace std;
 
 
@@ -156,6 +157,10 @@ int GoogleTrace::Initialize(const std::string &filePath, string name, int GMT, s
 	return SUCCESS;
 }
 
+
+
+
+
 int GoogleTrace:: Logfile(string msg, string path)
 {
     
@@ -207,3 +212,115 @@ int GoogleTrace::WriteToFile(const std::string &filePath)
 	traceStream.close();
 	return SUCCESS;
 }
+traceTE::traceTE(){
+    
+}
+
+ 
+string traceTE:: parse(const std::string &sCSV){
+    vector<string> vTokens;
+    Tokenize(sCSV,',',vTokens);
+    char *pEnd;
+    if(!vTokens[YEAR].empty())
+        year= vTokens[YEAR].c_str();
+    
+    if(!vTokens[MONTH].empty())
+        month = vTokens[MONTH].c_str();
+    if(!vTokens[DAY].empty())
+        day = vTokens[DAY].c_str();
+    if(!vTokens[HOUR].empty())
+        hour = vTokens[HOUR].c_str();
+    if(!vTokens[DATA].empty())
+        TE = vTokens[DATA].c_str();
+    string date=year+month+day+hour;
+    return date;
+       
+
+    
+}
+string traceTE:: getTE(){
+    return TE;
+}
+
+int TempElectric::Initialize(const std::string &filePath, string name, int GMT, string path)
+{
+    string key, data;
+    ifstream traceStream(filePath);
+    string sLine;
+    
+    while(!traceStream.eof())
+    {
+        traceStream >> sLine;
+       // cout<<sLine;
+        
+        traceTE nDate;
+        key= nDate.parse(sLine);
+        data = nDate.getTE();
+       // cout<<"data "<<data<<endl;
+        //cout<<"key "<<key<<endl;
+        vTempElectric[key]= stoi(data);
+    }
+ 
+    
+    traceStream.close();
+    string s= name+ " Completed Temp/Electric tracing at "+ localtime(GMT);
+   Logfile(s,path);
+    return SUCCESS;
+}
+int TempElectric:: Logfile(string msg, string path)
+{
+    
+    std::fstream execTraces;
+    execTraces.open (path, std::fstream::in | std::fstream::out | std::fstream::app);
+    
+    execTraces << msg<<endl;
+    
+    execTraces.close();
+    
+    
+    return SUCCESS;
+}
+double TempElectric:: TempElectricNextHours(string date, int hour, int start){
+    std::map<string,int>:: iterator currTE;
+   // cout<<"from local  "<< date<<endl;
+    
+    int count = 0;
+    int total = 0;
+    string tempDate;
+    double avgTE;
+    
+    for(int i=start; (i<=23)&&(i<=start+hour);i++)
+    {
+        tempDate = date + to_string(i);
+        currTE=vTempElectric.find(tempDate);
+        if(currTE!=vTempElectric.end()){
+          total+= currTE->second;
+          count++;
+        }
+    }
+    if(count!=hour){
+        char s=date[(date.size())-1];
+        int a= atoi(&s)+1;
+        std::string temp = std::to_string(a);
+        date[(date.size())-1]=temp[0];
+        int rem=hour-count;
+        for(int i=0;i<rem;i++){
+            
+            tempDate = date + to_string(i);
+            currTE=vTempElectric.find(tempDate);
+            if(currTE!=vTempElectric.end()){
+                total+= currTE->second;
+                count++;
+            }
+            
+        }
+     }
+    avgTE = (double)total/(double)hour;
+    if(count==hour)
+     return avgTE;
+    else
+        return FAIL;
+    
+}
+
+

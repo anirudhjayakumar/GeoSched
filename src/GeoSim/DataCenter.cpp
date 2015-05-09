@@ -24,10 +24,12 @@ using namespace std;
 
 const string machineConfig("/Users/harshitdokania/Desktop/cs525/geosched/datacenters/machine_config.csv");
 
-DataCenter::DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string n, int gmtDiff, string tracepath) {
+DataCenter::DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string n, int gmtDiff, const string &tracepath, const string &tempPath, const string &elecPath) {
 	// TODO Auto-generated constructor stub
 	nDCid = id;
 	m_sWorkloadTrace = workloadPath;
+    m_TempTrace = tempPath;
+    m_ElecTrace = elecPath;
 	m_pBarrier = pBarrier;
     name = n;
     m_GMT = gmtDiff;
@@ -83,6 +85,9 @@ int DataCenter::Initialize(DataCenterProxy * dataCenterProxies,
    
    
     m_workLoad.Initialize(m_sWorkloadTrace, name, m_GMT, m_ExecutionTraces);
+    m_Temp.Initialize(m_TempTrace, name, m_GMT, m_ExecutionTraces);
+    m_Electric.Initialize(m_ElecTrace, name, m_GMT, m_ExecutionTraces);
+ 
 
 	return SUCCESS;
 }
@@ -179,6 +184,23 @@ int DataCenter:: Logfile(string msg)
     
 }
 
+
+
+double DataCenter:: TemperatureNextHours(string date, int hour){
+    
+    string hr = localhour(m_GMT);
+    int h= atoi(hr.c_str());
+    return m_Temp.TempElectricNextHours(date, hour, h);
+    
+}
+
+double DataCenter:: ElectricityNextHours(string date, int hour){
+    
+    string hr = localhour(m_GMT);
+    int h= atoi(hr.c_str());
+   return m_Electric.TempElectricNextHours(date, hour, h);
+    
+}
 
 
 
@@ -503,6 +525,7 @@ string DataCenter:: localtime(int i){
     }
     else
         Time=to_string((ptm->tm_hour+i)%24);
+     int h= atoi(Time.c_str());
     Time+=":";
     if((ptm->tm_min)<9) {
         Time+="0" ;
@@ -515,4 +538,20 @@ string DataCenter:: localtime(int i){
     Time+=to_string((ptm->tm_sec));
     return Time;
 }
+string DataCenter:: localhour(int i){
+    
+    string Time;
+    time_t m_Time;
+    struct tm * ptm;
+    
+    time ( &m_Time );
+    ptm = gmtime(&m_Time);
+    if(ptm->tm_hour+i<=0){
+        Time=to_string(ptm->tm_hour+i+12);
+    }
+    else
+        Time=to_string((ptm->tm_hour+i)%24);
+    return Time;
+}
+
 
