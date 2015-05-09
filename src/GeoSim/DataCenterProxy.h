@@ -25,6 +25,8 @@ public:
 	std::unordered_map<int,Node*> GetResourceData();
     void InformLeaving();
     std::string GetName();
+    double          TemperatureNextHours(std::string date, int hour);
+    double          ElectricityNextHours(std::string date, int hour);
 private:
 	DataCenter *m_dc;
 };

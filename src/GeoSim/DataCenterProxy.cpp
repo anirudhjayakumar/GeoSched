@@ -40,6 +40,7 @@ string DataCenterProxy::GetName()
     
 }
 
+
 void DataCenterProxy::InformLeaving(){
     
     m_dc->decrementBarrier();
@@ -51,4 +52,12 @@ std::unordered_map<int,Node*> DataCenterProxy:: GetResourceData()
 {
 	return m_dc->GetResourceData();
 	//return std::unordered_map<int,Node*>();
+}
+
+
+double DataCenterProxy:: TemperatureNextHours(std::string date, int hour){
+    return m_dc->TemperatureNextHours(date, hour);
+}
+double DataCenterProxy::  ElectricityNextHours(std::string date, int hour){
+     return m_dc->ElectricityNextHours(date, hour);
 }
