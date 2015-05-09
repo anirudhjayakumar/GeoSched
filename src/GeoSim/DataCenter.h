@@ -47,7 +47,6 @@ public:
 	NodeMap 		GetResourceData();
 	void 			UpdateResourceData();
 	void 			set_dataCenterProxies(DataCenterProxy *proxy);
-    void            DecreaseBarrier();
 	GoogleTrace* 	getWorkLoad();
 	void 			Join();
 	void 			Simulation();
@@ -94,7 +93,6 @@ private:
 	void 				RemoveJobFromWaitingQueue(Job*);
 	std::list<Job*> 	GetWaitingJobs();
     string              localtime(int gmtDiff);
-    string              localhour(int i);
     string              name;
     string              m_ExecutionTraces;
     int 				Logfile(string msg);

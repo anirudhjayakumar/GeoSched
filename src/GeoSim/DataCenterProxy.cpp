@@ -41,10 +41,6 @@ string DataCenterProxy::GetName()
 }
 
 
-void DataCenterProxy::InformLeaving(){
-    
-    m_dc->decrementBarrier();
-}
 
 bool			DataCenterProxy::isAirEco()
 {

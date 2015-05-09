@@ -30,6 +30,9 @@ using namespace std;
 #define RESOURCE_SYNC_TIME		1800000000 // 1800 secs in us
 #define ENERGY_CALC_INTERVAL	900000000 // 15 mins
 
+#define MAX_TIME				14400000000 //4 hours
+
+
 const string machineConfig("/Users/harshitdokania/Desktop/cs525/geosched/datacenters/machine_config.csv");
 
 DataCenter::DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string n, int gmtDiff, const string &tracepath, \
@@ -319,7 +322,7 @@ void DataCenter::StartSimulation() {
         cycle_count++;
 	}
     
-    DecreaseBarrier();
+	decrementBarrier();
     s =name + " Leaving simulation at"+ getLocalTime() + " TotalCost:" + to_string(m_TotalCost) + \
     		" Total Energy:" + to_string(m_TotalEnergy);
     Logfile(s);
@@ -365,16 +368,6 @@ void DataCenter::MetaSchedJobToDC(std::vector<int> vecDCs, Job* pJob)
 	}
 }
 
-void DataCenter:: DecreaseBarrier(){
-    for (int i = 0; i < DC_COUNT; i++) {
-        if (i != nDCid){
-            m_dataCenterProxies[i].InformLeaving();
-            string s= name+ " Decreasing Barrier on "+ m_dataCenterProxies[i].GetName()+ " time: " +getLocalTime();
-            Logfile(s);
-        }
-    }
-}
-
 
 vector<int> DataCenter::GetDCSchedulable(Job *pJob)
 {
@@ -386,13 +379,28 @@ vector<int> DataCenter::GetDCSchedulable(Job *pJob)
 	}
 	return ret;
 }
-string DataCenter:: GetName(){
+
+
+string DataCenter:: GetName()
+{
     return name;
 }
 
 void DataCenter::ProgressRunningJobs() {
 	NodeMap &availResource = m_mapDCtoResource[nDCid];
     string s;
+    if(arrivalTime > MAX_TIME)
+	{
+    	string log = "time up. remvoing jobs from running list.";
+    	Logfile(log);
+		// delete all running jobs
+    	for(auto iter = m_vRunningJobs.begin(); iter != m_vRunningJobs.end(); ++iter)
+    	{
+    		Job *pJob = *iter;
+    		delete pJob;
+    	}
+    	m_vRunningJobs.clear();
+	}
     list<Job*>::iterator j = m_vRunningJobs.begin();
     while (j != m_vRunningJobs.end())
     {
@@ -666,13 +674,28 @@ void DataCenter::ScheduleJobsFromWaitingList() {
 	// get reference of local resources
 	NodeMap &availResource = m_mapDCtoResource[nDCid];
 	// get COPY of waiting jobs
-	std::list<Job*> waitJobs = GetWaitingJobs();
-
-	for (auto iter = waitJobs.begin(); iter != waitJobs.end(); ++iter) {
-		Job* pJob = *iter;
-		if (CheckDCFit(pJob, availResource))
-		{
-			ScheduleJob(pJob);
+	if(arrivalTime > MAX_TIME)
+	{
+		//delete all jobs
+		string log = "time up. remvoing jobs from waiting list.";
+		Logfile(log);
+		m_waitMutex.lock();
+		for (auto iter = m_vWaitingJobs.begin(); iter != m_vWaitingJobs.end(); ++iter) {
+			Job* pJob = *iter;
+			delete pJob;
+		}
+		m_vWaitingJobs.clear();
+		m_waitMutex.unlock();
+	}
+	else
+	{
+		std::list<Job*> waitJobs = GetWaitingJobs();
+		for (auto iter = waitJobs.begin(); iter != waitJobs.end(); ++iter) {
+			Job* pJob = *iter;
+			if (CheckDCFit(pJob, availResource))
+			{
+				ScheduleJob(pJob);
+			}
 		}
 	}
 }
@@ -682,48 +705,12 @@ void DataCenter::set_dataCenterProxies(DataCenterProxy *proxy)
 	m_dataCenterProxies = proxy;
 }
 
-string DataCenter:: localtime(int i){
+string DataCenter:: localtime(int i)
+{
+	return to_string(arrivalTime); // for logs just arrival time should be good
     
-    string Time;
-    time_t m_Time;
-    struct tm * ptm;
-    
-    time ( &m_Time );
-    ptm = gmtime(&m_Time);
-    if(ptm->tm_hour+i<=0){
-        Time=to_string(ptm->tm_hour+i+12);
-    }
-    else
-        Time=to_string((ptm->tm_hour+i)%24);
-     int h= atoi(Time.c_str());
-    Time+=":";
-    if((ptm->tm_min)<9) {
-        Time+="0" ;
-    }
-    Time+=to_string((ptm->tm_min));
-    Time+=":";
-    if((ptm->tm_sec)<=9){
-        Time+="0" ;
-    }
-    Time+=to_string((ptm->tm_sec));
-    return Time;
 }
 
-string DataCenter:: localhour(int i){
-    
-    string Time;
-    time_t m_Time;
-    struct tm * ptm;
-    
-    time ( &m_Time );
-    ptm = gmtime(&m_Time);
-    if(ptm->tm_hour+i<=0){
-        Time=to_string(ptm->tm_hour+i+12);
-    }
-    else
-        Time=to_string((ptm->tm_hour+i)%24);
-    return Time;
-}
 
 void 	DataCenter::InitStartPoint()
 {
