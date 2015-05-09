@@ -17,14 +17,23 @@
 #include "ConfigAccessor.h"
 #include <stdio.h>
 
+#define CORE_IDLE  				245
+#define CORE_PEAK  				320
+#define AVG_UTIL    			40
+#define FREE_AIR_CUT_OFF		64
+#define COP 					2 //for 15 degree celcius
+#define MONTH					1
+
 using namespace std;
 
-#define TIMEINC 				5000000   // 5 secs in us
-#define RESOURCE_SYNC_TIME		900000000 // 900 secs in us
+#define TIMEINC 				300000000   // 5 mins in us
+#define RESOURCE_SYNC_TIME		1800000000 // 1800 secs in us
+#define ENERGY_CALC_INTERVAL	900000000 // 15 mins
 
 const string machineConfig("/Users/harshitdokania/Desktop/cs525/geosched/datacenters/machine_config.csv");
 
-DataCenter::DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string n, int gmtDiff, const string &tracepath, const string &tempPath, const string &elecPath) {
+DataCenter::DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string n, int gmtDiff, const string &tracepath, \
+		const string &tempPath, const string &elecPath, bool isAirEco) {
 	// TODO Auto-generated constructor stub
 	nDCid = id;
 	m_sWorkloadTrace = workloadPath;
@@ -34,8 +43,10 @@ DataCenter::DataCenter(int id, const std::string &workloadPath, Barrier *pBarrie
     name = n;
     m_GMT = gmtDiff;
     m_ExecutionTraces = tracepath;
-
-    
+    bAirEco = isAirEco;
+    m_TotalCost = 0;
+    m_TotalEnergy = 0;
+    InitStartPoint();
     string s= "Started creating " + name + " DataCenter at " +getLocalTime();
    
     Logfile(s);
@@ -43,6 +54,11 @@ DataCenter::DataCenter(int id, const std::string &workloadPath, Barrier *pBarrie
 
 DataCenter::~DataCenter() {
 	// TODO Auto-generated destructor stub
+}
+
+double 	DataCenter::isAirEco()
+{
+	return bAirEco;
 }
 
 int DataCenter::Initialize(DataCenterProxy * dataCenterProxies,
@@ -101,7 +117,7 @@ void DataCenter::AddJobsToWaitingList(Job *pJob) {
 
 }
 
-void DataCenter::PrintUtilization() {
+void DataCenter::GetUtilization(double &cpu_util,int &free_cpu, int &total_cpu) {
     NodeMap &nodeMap = m_mapDCtoResource[nDCid];
     INT64_ totalCpu(0);
     INT64_ freeCpu(0);
@@ -125,11 +141,15 @@ void DataCenter::PrintUtilization() {
     
     
     useCpu = totalCpu - freeCpu;
+
     useMem = totalMem - freeMem;
   
 
     pCpu=((double)useCpu / (double)totalCpu)*100;
     pMem=((double)useMem / (double)totalMem)*100;
+    cpu_util = pCpu;
+    free_cpu = freeCpu;
+    total_cpu = totalCpu;
     s = name+ " CPU Utilization: "+ to_string(pCpu) +"% Memory Utilization: "+ to_string(pMem)+"%";
     Logfile(s);
 
@@ -186,19 +206,29 @@ int DataCenter:: Logfile(string msg)
 
 
 
-double DataCenter:: TemperatureNextHours(string date, int hour){
-    
-    string hr = localhour(m_GMT);
-    int h= atoi(hr.c_str());
-    return m_Temp.TempElectricNextHours(date, hour, h);
+double DataCenter:: TemperatureNextHours(int hour)
+{
+	chrono::system_clock::time_point tp = startPoint + std::chrono::microseconds(arrivalTime);
+	// Convert std::chrono::system_clock::time_point to std::time_t
+	std::time_t tt = std::chrono::system_clock::to_time_t(tp);
+	    // Convert std::time_t to std::tm (popular extension)
+	std::tm tm = std::tm{0};
+	gmtime_r(&tt, &tm);
+	string date = to_string(tm.tm_year+1900) + "," + to_string(tm.tm_mon + 1) + "," + to_string(tm.tm_mday);
+    return m_Temp.TempElectricNextHours(date, hour, tm.tm_hour);
     
 }
 
-double DataCenter:: ElectricityNextHours(string date, int hour){
+double DataCenter:: ElectricityNextHours( int hour){
     
-    string hr = localhour(m_GMT);
-    int h= atoi(hr.c_str());
-   return m_Electric.TempElectricNextHours(date, hour, h);
+	chrono::system_clock::time_point tp = startPoint + std::chrono::microseconds(arrivalTime);
+	// Convert std::chrono::system_clock::time_point to std::time_t
+	std::time_t tt = std::chrono::system_clock::to_time_t(tp);
+		// Convert std::time_t to std::tm (popular extension)
+	std::tm tm = std::tm{0};
+	gmtime_r(&tt, &tm);
+	string date = to_string(tm.tm_year+1900) + "," + to_string(tm.tm_mon + 1) + "," + to_string(tm.tm_mday);
+	return m_Electric.TempElectricNextHours(date, hour, tm.tm_hour);
     
 }
 
@@ -209,7 +239,7 @@ void DataCenter::StartSimulation() {
 
 	string s =name + " Entered Simulation at "+getLocalTime();
     Logfile(s);
-	INT64_ arrivalTime = TIMEINC;
+	arrivalTime = TIMEINC;
     int cycle_count = 1;
 	// loop till the time there are jobs left in the trace
 	// or till the time all jobs complete running.
@@ -264,7 +294,7 @@ void DataCenter::StartSimulation() {
 		arrivalTime += TIMEINC;
 		if (arrivalTime % RESOURCE_SYNC_TIME == 0) {
 			UpdateResourceData();
-            PrintUtilization();
+            //PrintUtilization();
 		}
 
 		s =name + " Waiting at "+ getLocalTime();
@@ -281,7 +311,8 @@ void DataCenter::StartSimulation() {
 	}
     
     DecreaseBarrier();
-    s =name + " Leaving simulation at"+ getLocalTime();
+    s =name + " Leaving simulation at"+ getLocalTime() + " TotalCost:" + to_string(m_TotalCost) + \
+    		" Total Energy:" + to_string(m_TotalEnergy);
     Logfile(s);
    	return;
 }
@@ -293,11 +324,36 @@ void DataCenter::  decrementBarrier(){
 
 void DataCenter::MetaSchedJobToDC(std::vector<int> vecDCs, Job* pJob)
 {
-	// will be replaced with advanced algo. for now choose random dc id and send job
-	int dc_id = rand() % vecDCs.size();
-    string s= name+ " Scheduling jobs on "+ m_dataCenterProxies[dc_id].GetName()+ " time: " +getLocalTime();
-    Logfile(s);
-	m_dataCenterProxies[dc_id].SubmitJob(pJob);
+	if(vecDCs.size() == 0)
+	{
+		//skip the job
+		delete pJob;
+	}
+	else if (vecDCs.size() == 1)
+	{
+		m_dataCenterProxies[vecDCs[0]].SubmitJob(pJob);
+	}
+	else
+	{
+		// will be replaced with advanced algo. for now choose random dc id and send job
+		int dc_id = vecDCs[0];
+		double total_cost = CalculateDynamicJobCost(&m_dataCenterProxies[vecDCs[0]],pJob) + \
+				CalculateCoolingCost(&m_dataCenterProxies[vecDCs[0]],pJob);
+		for (int index = 1; index < vecDCs.size(); ++index)
+		{
+			int dc = vecDCs[index];
+			double dc_cost = CalculateDynamicJobCost(&m_dataCenterProxies[dc],pJob) + \
+					CalculateCoolingCost(&m_dataCenterProxies[dc],pJob);
+			if( dc_cost < total_cost)
+			{
+				total_cost = dc_cost;
+				dc_id = dc;
+			}
+		}
+		string s= name+ " Scheduling jobs on "+ m_dataCenterProxies[dc_id].GetName()+ " time: " +getLocalTime();
+		Logfile(s);
+		m_dataCenterProxies[dc_id].SubmitJob(pJob);
+	}
 }
 
 void DataCenter:: DecreaseBarrier(){
@@ -484,6 +540,108 @@ int DataCenter::ScheduleJob(Job *pJob) {
 	return SUCCESS;
 }
 
+
+double DataCenter::CalculateDynamicJobCost(DataCenterProxy* proxy,Job *pJob)
+{
+/*
+ * Get electricity price
+ * calculate dynamic power
+ * calculate cost
+ */
+	double elec_cost = proxy->ElectricityNextHours(4);
+	int dynamic_power_max = CORE_PEAK - CORE_IDLE;
+	int power_per_core = AVG_UTIL*dynamic_power_max;
+	// we will max the CPU's to 64, else the energy numbers will be incomprehensible
+	double cores = pJob->nCores * (64/1600);
+	double secs = ((double)pJob->GetTotalRunTime()/1000000);
+	double hours = secs/3600;
+	double total_energy_for_job = hours*cores*power_per_core;
+	double total_cost = total_energy_for_job/(1000000*elec_cost);
+	return total_cost;
+
+}
+
+double DataCenter::CalculateCoolingCost(DataCenterProxy* proxy,Job *pJob)
+{
+/*
+ * see which equation to use using aireco info
+ * calculate cooling contribution due to dynamic power
+ */
+	double elec_cost = proxy->ElectricityNextHours(4);
+	int dynamic_power_max = CORE_PEAK - CORE_IDLE;
+	int power_per_core = AVG_UTIL*dynamic_power_max;
+	// we will max the CPU's to 64, else the energy numbers will be incomprehensible
+	double cores = pJob->nCores * (64/1600);
+	double total_power_for_job = cores*power_per_core;
+	double temp_avg = proxy->TemperatureNextHours(4);
+	double cooling_power = 0;
+	if(proxy->isAirEco() && temp_avg <= (double)FREE_AIR_CUT_OFF)
+	{
+		float PUE =0;
+		if(temp_avg <= 25)
+			PUE = 1.05;
+		else if(temp_avg > 25 && temp_avg <= 35)
+			PUE = 1.07;
+		else if(temp_avg > 35 && temp_avg <= 50)
+			PUE = 1.09;
+		else if(temp_avg > 50 && temp_avg <= 60)
+			PUE = 1.10;
+		else
+			PUE = 1.17;
+		cooling_power = total_power_for_job*(PUE - 1);
+	}
+	else
+	{
+		cooling_power = total_power_for_job/COP;
+	}
+	double secs = ((double)pJob->GetTotalRunTime()/1000000);
+	double hours = secs/3600;
+	double total_energy_for_cooling = hours*cooling_power;
+	double total_cost = total_energy_for_cooling/(1000000*elec_cost);
+	return total_cost;
+
+}
+
+void DataCenter::UpdateEnergyCost()
+{
+	// get util
+	double cpu_util=0;
+	int    freeCPUs,totalCPUs;
+	GetUtilization(cpu_util,freeCPUs,totalCPUs);
+	double it_power = (freeCPUs*CORE_IDLE + (totalCPUs-freeCPUs)*CORE_PEAK*AVG_UTIL)*(64/1600);;
+	double cooling_power = 0;
+	//cooling
+	double temp_avg = TemperatureNextHours(1);
+	if(isAirEco() && temp_avg <= (double)FREE_AIR_CUT_OFF)
+	{
+		float PUE =0;
+		if(temp_avg <= 25)
+			PUE = 1.05;
+		else if(temp_avg > 25 && temp_avg <= 35)
+			PUE = 1.07;
+		else if(temp_avg > 35 && temp_avg <= 50)
+			PUE = 1.09;
+		else if(temp_avg > 50 && temp_avg <= 60)
+			PUE = 1.10;
+		else
+			PUE = 1.17;
+		cooling_power = it_power*(PUE - 1);
+	}
+	else
+	{
+		cooling_power = it_power/COP;
+	}
+	int elec_cost = ElectricityNextHours(1);
+	double hours = ((double)ENERGY_CALC_INTERVAL/1000000)/3600;
+	double total_energy = hours*(it_power + cooling_power);
+	double total_cost = total_energy/(1000000*elec_cost);
+	m_TotalCost+=total_cost;
+	m_TotalEnergy+=total_energy;
+
+}
+
+
+
 void DataCenter::RemoveJobFromWaitingQueue(Job* pJob)
 {
 	m_waitMutex.lock();
@@ -508,10 +666,11 @@ void DataCenter::ScheduleJobsFromWaitingList() {
 	}
 }
 
-void DataCenter::set_dataCenterProxies(DataCenterProxy *proxy) {
-
-m_dataCenterProxies = proxy;
+void DataCenter::set_dataCenterProxies(DataCenterProxy *proxy)
+{
+	m_dataCenterProxies = proxy;
 }
+
 string DataCenter:: localtime(int i){
     
     string Time;
@@ -538,6 +697,7 @@ string DataCenter:: localtime(int i){
     Time+=to_string((ptm->tm_sec));
     return Time;
 }
+
 string DataCenter:: localhour(int i){
     
     string Time;
@@ -554,4 +714,39 @@ string DataCenter:: localhour(int i){
     return Time;
 }
 
-
+void 	DataCenter::InitStartPoint()
+{
+	// we always consider 15 of each month
+	std::tm tm = {0};
+	tm.tm_sec = 00;
+	tm.tm_min = 00;
+	tm.tm_mon = MONTH - 1;
+	tm.tm_year = 113;
+	tm.tm_isdst = -1;
+	switch(nDCid)
+	{
+	case CHILE:
+		tm.tm_mday = 14;
+		tm.tm_hour = 21;
+		break;
+	case FINLAND:
+		tm.tm_mday = 15;
+		tm.tm_hour = 3;
+		break;
+	case SINGAPORE:
+		tm.tm_mday = 15;
+		tm.tm_hour = 8;
+		break;
+	case OREGON:
+		tm.tm_mday = 14;
+		tm.tm_hour = 17;
+		break;
+	case IOWA:
+		tm.tm_mday = 14;
+		tm.tm_hour = 19;
+		break;
+	}
+	time_t tt = timegm(&tm);
+	    // Convert std::time_t to std::chrono::system_clock::time_point
+	startPoint = chrono::system_clock::from_time_t(tt);
+}

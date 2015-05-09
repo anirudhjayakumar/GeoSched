@@ -46,7 +46,10 @@ void DataCenterProxy::InformLeaving(){
     m_dc->decrementBarrier();
 }
 
-
+bool			DataCenterProxy::isAirEco()
+{
+	return m_dc->isAirEco();
+}
 
 std::unordered_map<int,Node*> DataCenterProxy:: GetResourceData()
 {
@@ -55,9 +58,9 @@ std::unordered_map<int,Node*> DataCenterProxy:: GetResourceData()
 }
 
 
-double DataCenterProxy:: TemperatureNextHours(std::string date, int hour){
-    return m_dc->TemperatureNextHours(date, hour);
+double DataCenterProxy:: TemperatureNextHours(int hour){
+    return m_dc->TemperatureNextHours(hour);
 }
-double DataCenterProxy::  ElectricityNextHours(std::string date, int hour){
-     return m_dc->ElectricityNextHours(date, hour);
+double DataCenterProxy::  ElectricityNextHours(int hour){
+     return m_dc->ElectricityNextHours( hour);
 }

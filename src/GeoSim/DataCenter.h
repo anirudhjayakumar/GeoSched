@@ -17,6 +17,9 @@
 #include <mutex>
 #include "GoogleTrace.h"
 #include "common.h"
+#include <chrono>
+#include <ctime>
+
 class DataCenterProxy; //forward declare
 class Node;
 class ConfigAccessor;
@@ -33,12 +36,13 @@ typedef std::unordered_map<int,Node*>                NodeMap;
 class Job;
 class DataCenter {
 public:
-	DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string name, int gmtDiff, const  string &traces,const string &tempPath, const string &elecPath);
+	DataCenter(int id, const std::string &workloadPath, Barrier *pBarrier, string name, int gmtDiff, const  string &traces\
+			,const string &tempPath, const string &elecPath, bool);
 	virtual ~DataCenter();
 	int 			Initialize(DataCenterProxy * dataCenterProxies, ConfigAccessor *pAccessor);
 	void 			AddJobsToWaitingList(Job *pJob);
 	void 			ScheduleJobsFromWaitingList();
-	void 			PrintUtilization();
+	void 			GetUtilization(double &util, int &free, int &total_cpu);
 	NodeMap 		GetResourceData();
 	void 			UpdateResourceData();
 	void 			set_dataCenterProxies(DataCenterProxy *proxy);
@@ -50,9 +54,9 @@ public:
     string          GetName();
     Barrier*        getBarrier();
     void            decrementBarrier();
-    double          TemperatureNextHours(string date, int hour);
-    double          ElectricityNextHours(string date, int hour);
-
+    double          TemperatureNextHours(int hour);
+    double          ElectricityNextHours(int hour);
+    double 			isAirEco();
 
 private:
 	int 				nDCid;
@@ -73,7 +77,13 @@ private:
 	Barrier				*m_pBarrier;
 	ConfigAccessor      *m_pAccessor;
     int                 m_GMT;
-	bool				CheckDCFit(Job *,NodeMap &);
+    bool				bAirEco;
+    double 				m_TotalCost;
+    double				m_TotalEnergy;
+    std::chrono::system_clock::time_point startPoint;
+    INT64_ 				arrivalTime;
+private:
+    bool				CheckDCFit(Job *,NodeMap &);
 	void 				StartSimulation(); //main scheduling logic goes in here
 	std::vector<int>    GetDCSchedulable(Job *);
 	void				MetaSchedJobToDC(std::vector<int> vecDCs,Job*);
@@ -85,7 +95,14 @@ private:
     string              localhour(int i);
     string              name;
     string              m_ExecutionTraces;
-    int Logfile(string msg);
+    int 				Logfile(string msg);
+    // speculated cost calculation
+    double 				CalculateDynamicJobCost(DataCenterProxy* proxy,Job *pJob);
+    double 				CalculateCoolingCost(DataCenterProxy* proxy,Job *pJob);
+    //
+    void 				UpdateEnergyCost();
+    void 				InitStartPoint();
+
     
    
    

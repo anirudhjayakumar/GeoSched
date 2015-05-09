@@ -53,6 +53,7 @@ public:
 	std::vector<Task*> getTasks();
 	INT64_ GetTotalRunTime();
     // add required method
+	double   nCores;
 private:
 	std::vector<Task*> vTasks;
 	INT64_ nTotalRunTime;
@@ -60,6 +61,7 @@ private:
 	INT64_ nJobID;
     int nodeID;
 	int    nSchedClass;
+	 //neeed for energy calc
 };
 
 #endif /* JOB_H_ */

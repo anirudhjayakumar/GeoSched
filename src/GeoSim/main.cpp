@@ -12,27 +12,31 @@
 #include "DataCenterProxy.h"
 #include "ConfigAccessor.h"
 using namespace std;
-const string workload_chile("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_1.csv");
-const string workload_finland("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_2.csv");
-const string workload_singapore("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_3.csv");
-const string workload_oregon("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_4.csv");
-const string workload_iowa("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/5_5.csv");
-const string output_chile("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/chile.trace");
-const string output_finland("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/finalnd.trace");
-const string output_singapore("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/singapore.trace");
 
-const string output_oregon("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/oregon.trace");
-const string output_iowa("/Users/harshitdokania/Desktop/cs525/geosched/workloads/google/iowa.trace");
-const string temp_chile("/Users/harshitdokania/Desktop/geosched/datacenters/temperature/chile.csv");
-const string temp_finland("/Users/harshitdokania/Desktop/geosched/datacenters/temperature/finland.csv");
-const string temp_iowa("/Users/harshitdokania/Desktop/geosched/datacenters/temperature/iowa.csv");
-const string temp_oregon("/Users/harshitdokania/Desktop/geosched/datacenters/temperature/oregon.csv");
-const string temp_singapore("/Users/harshitdokania/Desktop/geosched/datacenters/temperature/singapore.csv");
-const string elec_chile("/Users/harshitdokania/Desktop/geosched/datacenters/electricity/chile.csv");
-const string elec_finland("/Users/harshitdokania/Desktop/geosched/datacenters/electricity/finland.csv");
-const string elec_iowa("/Users/harshitdokania/Desktop/geosched/datacenters/electricity/iowa.csv");
-const string elec_oregon("/Users/harshitdokania/Desktop/geosched/datacenters/electricity/oregon.csv");
-const string elec_singapore("/Users/harshitdokania/Desktop/geosched/datacenters/electricity/singapore.csv");
+//all these paths are relative
+const string workload_chile("../../workloads/google/5_1.csv");
+const string workload_finland("../../workloads/google/5_2.csv");
+const string workload_singapore("../../workloads/google/5_3.csv");
+const string workload_oregon("../../workloads/google/5_4.csv");
+const string workload_iowa("../../workloads/google/5_5.csv");
+
+const string output_chile("chile.trace");
+const string output_finland("finalnd.trace");
+const string output_singapore("singapore.trace");
+const string output_oregon("oregon.trace");
+const string output_iowa("iowa.trace");
+
+const string temp_chile("../../datacenters/temperature/chile.csv");
+const string temp_finland("../../datacenters/temperature/finland.csv");
+const string temp_iowa("../../datacenters/temperature/iowa.csv");
+const string temp_oregon("../../datacenters/temperature/oregon.csv");
+const string temp_singapore("../../datacenters/temperature/singapore.csv");
+
+const string elec_chile("../../datacenters/electricity/chile.csv");
+const string elec_finland("../../datacenters/electricity/finland.csv");
+const string elec_iowa("../../datacenters/electricity/iowa.csv");
+const string elec_oregon("../../datacenters/electricity/oregon.csv");
+const string elec_singapore("../../datacenters/electricity/singapore.csv");
 
 const string config_xml("config.xml");
 
@@ -48,11 +52,11 @@ int main()
 	
 	Barrier oBarrier(DC_COUNT);
 
-	DataCenter chile(CHILE, workload_chile,&oBarrier, "Chile", -3, output_chile, temp_chile, elec_chile);
-	DataCenter finland(FINLAND, workload_finland,&oBarrier, "Finland",3, output_finland, temp_finland, elec_finland);
-	DataCenter singapore(SINGAPORE, workload_singapore,&oBarrier, "Singapore", -4, output_singapore, temp_singapore, elec_singapore);
-	DataCenter oregon(OREGON, workload_oregon,&oBarrier, "Oregon", -7, output_oregon, temp_oregon, elec_oregon);
-	DataCenter iowa(IOWA, workload_iowa,&oBarrier,"Iowa", -5, output_iowa, temp_iowa, elec_iowa);
+	DataCenter chile(CHILE, workload_chile,&oBarrier, "Chile", -3, output_chile, temp_chile, elec_chile,false);
+	DataCenter finland(FINLAND, workload_finland,&oBarrier, "Finland",3, output_finland, temp_finland, elec_finland,true);
+	DataCenter singapore(SINGAPORE, workload_singapore,&oBarrier, "Singapore", 8, output_singapore, temp_singapore, elec_singapore,false);
+	DataCenter oregon(OREGON, workload_oregon,&oBarrier, "Oregon", -7, output_oregon, temp_oregon, elec_oregon,true);
+	DataCenter iowa(IOWA, workload_iowa,&oBarrier,"Iowa", -5, output_iowa, temp_iowa, elec_iowa,true);
 	
     
     
@@ -84,13 +88,13 @@ int main()
 	oregon.Initialize(dcProxy,&oAccessor);
     iowa.Initialize(dcProxy,&oAccessor);
    
-   /* temp and electricity*/
+   /* temp and electricity
     cout<<"Chile Temp: "<<chile.TemperatureNextHours("2013,1,31",17)<<endl;
     cout<<"Finland Temp"<<finland.TemperatureNextHours("2013,1,3",5)<<endl;
     cout<<"Chile.Elec:= "<<chile.ElectricityNextHours("2013,1,3",5)<<endl;
     cout<<"Chile.Elec:= "<<chile.ElectricityNextHours("2013,1,3",5)<<endl;
     
-    
+    */
     
     chile.UpdateResourceData();
     finland.UpdateResourceData();
@@ -112,12 +116,6 @@ int main()
 	oregon.Join();
 	iowa.Join();
     cout<<"End of Simulation"<<endl;
-
-
-
-
-
-
 
 	return 0;
 }
