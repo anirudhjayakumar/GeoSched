@@ -23,28 +23,23 @@ DataCenterProxy::~DataCenterProxy() {
 int DataCenterProxy:: Initialize(DataCenter *dc)
 {
 	//cout<<"Creating Proxy\n";
-	m_dc = dc;
+	 m_dc = dc;
 	return SUCCESS;
 }
 
 int DataCenterProxy::SubmitJob(Job* pJob)
 {
-
+	
 	m_dc->AddJobsToWaitingList(pJob);
 	return SUCCESS;
 }
 string DataCenterProxy::GetName()
 {
-
-	return m_dc->GetName();
-
+    
+    return m_dc->GetName();
+    
 }
 
-
-void DataCenterProxy::InformLeaving(){
-
-	m_dc->decrementBarrier();
-}
 
 
 bool			DataCenterProxy::isAirEco()
@@ -60,8 +55,8 @@ std::unordered_map<int,Node*> DataCenterProxy:: GetResourceData()
 
 
 double DataCenterProxy:: TemperatureNextHours(int hour){
-	return m_dc->TemperatureNextHours(hour);
+    return m_dc->TemperatureNextHours(hour);
 }
 double DataCenterProxy::  ElectricityNextHours(int hour){
-	return m_dc->ElectricityNextHours( hour);
+     return m_dc->ElectricityNextHours( hour);
 }

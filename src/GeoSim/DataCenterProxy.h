@@ -23,7 +23,6 @@ public:
 	int Initialize(DataCenter *dc);
 	int SubmitJob(Job* pJob);
 	std::unordered_map<int,Node*> GetResourceData();
-    void InformLeaving();
     std::string GetName();
     double          TemperatureNextHours(int hour);
     double          ElectricityNextHours(int hour);

@@ -14,11 +14,11 @@
 using namespace std;
 
 //all these paths are relative
-const string workload_chile("../../workloads/google/5_1.csv");
-const string workload_finland("../../workloads/google/5_2.csv");
-const string workload_singapore("../../workloads/google/5_3.csv");
-const string workload_oregon("../../workloads/google/5_4.csv");
-const string workload_iowa("../../workloads/google/5_5.csv");
+const string workload_chile("../../workloads/google/5_1_.csv");
+const string workload_finland("../../workloads/google/5_2_.csv");
+const string workload_singapore("../../workloads/google/5_3_.csv");
+const string workload_oregon("../../workloads/google/5_4_.csv");
+const string workload_iowa("../../workloads/google/5_5_.csv");
 
 const string output_chile("chile.trace");
 const string output_finland("finalnd.trace");
@@ -47,67 +47,75 @@ const string config_xml("config.xml");
 
 int main()
 {
-
+	
 	cout << "GeoSim Simulation" << endl;
-
+	
 	Barrier oBarrier(DC_COUNT);
+
 	DataCenter chile(CHILE, workload_chile,&oBarrier, "Chile", -3, output_chile, temp_chile, elec_chile,false);
 	DataCenter finland(FINLAND, workload_finland,&oBarrier, "Finland",3, output_finland, temp_finland, elec_finland,true);
 	DataCenter singapore(SINGAPORE, workload_singapore,&oBarrier, "Singapore", 8, output_singapore, temp_singapore, elec_singapore,false);
 	DataCenter oregon(OREGON, workload_oregon,&oBarrier, "Oregon", -7, output_oregon, temp_oregon, elec_oregon,true);
 	DataCenter iowa(IOWA, workload_iowa,&oBarrier,"Iowa", -5, output_iowa, temp_iowa, elec_iowa,true);
-
-
-
+	
+    
+    
 	DataCenterProxy *dcProxy= new DataCenterProxy[DC_COUNT];
 	dcProxy[CHILE].Initialize(&chile);
 	dcProxy[FINLAND].Initialize(&finland);
 	dcProxy[SINGAPORE].Initialize(&singapore);
 	dcProxy[OREGON].Initialize(&oregon);
 	dcProxy[IOWA].Initialize(&iowa);
+    
+       /*oregon.TemperatureNextHours("201313",17);
+    singapore.TemperatureNextHours("201313",5);
+    iowa.TemperatureNextHours("201313",5);*/
+    
+   
+    /*
+    finalnd.TemperatureNextHours("201313",5);
+    chile.TemperatureNextHours("201313",5);
+    finalnd.TemperatureNextHours("201313",5);
 
+    finalnd.TemperatureNextHours("201313",5);*/
 
-
-	ConfigAccessor oAccessor;
-
-	ConfigAccessor oAccessor;
+    ConfigAccessor oAccessor;
 	oAccessor.Init(config_xml);
 
 	chile.Initialize(dcProxy,&oAccessor);
 	finland.Initialize(dcProxy,&oAccessor);
 	singapore.Initialize(dcProxy,&oAccessor);
 	oregon.Initialize(dcProxy,&oAccessor);
-	iowa.Initialize(dcProxy,&oAccessor);
+    iowa.Initialize(dcProxy,&oAccessor);
+   
+   /* temp and electricity
+    cout<<"Chile Temp: "<<chile.TemperatureNextHours("2013,1,31",17)<<endl;
+    cout<<"Finland Temp"<<finland.TemperatureNextHours("2013,1,3",5)<<endl;
+    cout<<"Chile.Elec:= "<<chile.ElectricityNextHours("2013,1,3",5)<<endl;
+    cout<<"Chile.Elec:= "<<chile.ElectricityNextHours("2013,1,3",5)<<endl;
+    
+    */
+    
+    chile.UpdateResourceData();
+    finland.UpdateResourceData();
+    singapore.UpdateResourceData();
+    oregon.UpdateResourceData();
+    iowa.UpdateResourceData();
 
 
-	/* temp and electricity
-	   cout<<"Chile Temp: "<<chile.TemperatureNextHours("2013,1,31",17)<<endl;
-	   cout<<"Finland Temp"<<finland.TemperatureNextHours("2013,1,3",5)<<endl;
-	   cout<<"Chile.Elec:= "<<chile.ElectricityNextHours("2013,1,3",5)<<endl;
-	   cout<<"Chile.Elec:= "<<chile.ElectricityNextHours("2013,1,3",5)<<endl;
-
-	 */
-
-	chile.UpdateResourceData();
-	finland.UpdateResourceData();
-	singapore.UpdateResourceData();
-	oregon.UpdateResourceData();
-	iowa.UpdateResourceData();
+    chile.Simulation();
+    finland.Simulation();
+    singapore.Simulation();
+    oregon.Simulation();
+    iowa.Simulation();
 
 
-	chile.Simulation();
-	finland.Simulation();
-	singapore.Simulation();
-	oregon.Simulation();
-	iowa.Simulation();
-
-
-	chile.Join();
+    chile.Join();
 	finland.Join();
 	singapore.Join();
 	oregon.Join();
 	iowa.Join();
-	cout<<"End of Simulation"<<endl;
+    cout<<"End of Simulation"<<endl;
 
 	return 0;
 }
