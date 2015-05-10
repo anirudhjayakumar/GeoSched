@@ -14,11 +14,11 @@
 using namespace std;
 
 //all these paths are relative
-const string workload_chile("../../workloads/google/5_1_.csv");
-const string workload_finland("../../workloads/google/5_2_.csv");
-const string workload_singapore("../../workloads/google/5_3_.csv");
-const string workload_oregon("../../workloads/google/5_4_.csv");
-const string workload_iowa("../../workloads/google/5_5_.csv");
+const string workload_chile("../../workloads/google/5_1_1day.csv");
+const string workload_finland("../../workloads/google/5_2_1day.csv");
+const string workload_singapore("../../workloads/google/5_3_1day.csv");
+const string workload_oregon("../../workloads/google/5_4_1day.csv");
+const string workload_iowa("../../workloads/google/5_5_1day.csv");
 
 const string output_chile("chile.trace");
 const string output_finland("finalnd.trace");

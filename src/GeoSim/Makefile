@@ -9,7 +9,7 @@
 CC = g++
 
 # define any compile-time flags
-CFLAGS = -g -gdwarf-2 -pthread -std=c++11
+CFLAGS = -O3 -pthread -std=c++11 -DLOAD
 
 # define any directories containing header files other than /usr/include
 #
@@ -63,6 +63,7 @@ $(MAIN): $(OBJS)
 
 clean:
 	$(RM) *.o *~ $(MAIN)
+	$(RM) *.trace
 
 depend: $(SRCS)
 	makedepend $(INCLUDES) $^

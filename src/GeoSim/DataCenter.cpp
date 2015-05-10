@@ -30,7 +30,7 @@ using namespace std;
 #define RESOURCE_SYNC_TIME		1800000000 // 1800 secs in us
 #define ENERGY_CALC_INTERVAL	900000000 // 15 mins
 
-#define MAX_TIME				14400000000 //4 hours
+#define MAX_TIME				86400000000 //24 hours
 
 
 const string machineConfig("../../datacenters/machine_config.csv");
