@@ -60,3 +60,11 @@ double DataCenterProxy:: TemperatureNextHours(int hour){
 double DataCenterProxy::  ElectricityNextHours(int hour){
      return m_dc->ElectricityNextHours( hour);
 }
+double   DataCenterProxy::       GetUtilization(){
+    return m_dc->GetUtilization();
+}
+
+
+
+
+

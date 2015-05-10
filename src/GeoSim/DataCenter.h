@@ -57,6 +57,7 @@ public:
     double          TemperatureNextHours(int hour);
     double          ElectricityNextHours(int hour);
     double 			isAirEco();
+    double          GetUtilization();
 
 private:
 	int 				nDCid;
@@ -101,6 +102,7 @@ private:
     // speculated cost calculation
     double 				CalculateDynamicJobCost(DataCenterProxy* proxy,Job *pJob, string name);
     double 				CalculateCoolingCost(DataCenterProxy* proxy,Job *pJob, string name);
+    double              CoolLoadBalancer(DataCenterProxy* proxy,Job *pJob, string n);
     //
     void 				UpdateEnergyCost();
     void 				InitStartPoint();

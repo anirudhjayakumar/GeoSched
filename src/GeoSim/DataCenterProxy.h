@@ -27,8 +27,10 @@ public:
     double          TemperatureNextHours(int hour);
     double          ElectricityNextHours(int hour);
     bool			isAirEco();
+    double          GetUtilization();
 private:
 	DataCenter *m_dc;
+    
 };
 
 #endif /* DATACENTERPROXY_H_ */
