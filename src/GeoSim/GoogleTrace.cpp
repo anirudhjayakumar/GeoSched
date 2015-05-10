@@ -225,8 +225,8 @@ string traceTE:: parse(const std::string &sCSV){
     if(!vTokens[YEAR].empty())
         year= vTokens[YEAR].c_str();
     
-    if(!vTokens[MONTH].empty())
-        month = vTokens[MONTH].c_str();
+    if(!vTokens[MONT].empty())
+        month = vTokens[MONT].c_str();
     if(!vTokens[DAY].empty())
         day = vTokens[DAY].c_str();
     if(!vTokens[HOUR].empty())
