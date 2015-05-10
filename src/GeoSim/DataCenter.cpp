@@ -370,6 +370,7 @@ void DataCenter::  decrementBarrier(){
 
 void DataCenter::MetaSchedJobToDC(std::vector<int> vecDCs, Job* pJob)
 {
+        string s;
 	if(vecDCs.size() == 0)
 	{
 		//skip the job
@@ -389,7 +390,7 @@ void DataCenter::MetaSchedJobToDC(std::vector<int> vecDCs, Job* pJob)
 		double total_cost = CalculateDynamicJobCost(&m_dataCenterProxies[vecDCs[0]],pJob, m_dataCenterProxies[0].GetName()) + \
 				CalculateCoolingCost(&m_dataCenterProxies[vecDCs[0]],pJob,m_dataCenterProxies[0].GetName());
         #ifdef DEBUG
-        string s = name + " recieved total cost from " + m_dataCenterProxies[0].GetName();
+         s = name + " recieved total cost from " + m_dataCenterProxies[0].GetName();
         Logfile(total_cost, s );
 #endif
 		for (int index = 1; index < vecDCs.size(); ++index)
