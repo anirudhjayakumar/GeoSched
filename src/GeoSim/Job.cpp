@@ -14,15 +14,15 @@ Job::Job()
 {
 }
 
-Job::Job(INT64_ id, INT64_ runtime, int sClass, int tasks, double cpu, double mem) {
+Job::Job(INT64_ id, INT64_ runtime, int sClass, int tasks, int cpu, int mem) {
 	// TODO Auto-generated constructor stub
    nJobID = id;
    nSchedClass = sClass;
    nTotalRunTime = runtime;
    nCurrRunTime = 0;
    nCores = cpu;
-   int myCpu = (cpu-1)/tasks +1;
-   int myMem = (mem-1)/tasks +1;
+   int myCpu = (cpu)/tasks;
+   int myMem = (mem)/tasks;
    for(int i=0; i<tasks ; i++){
 	   Task *t= new Task();
 	   t->setMem(myMem);

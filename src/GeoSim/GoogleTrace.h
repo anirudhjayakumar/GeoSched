@@ -34,8 +34,8 @@ struct TraceItem
 	INT64_ 			nFinishTime;   // job event
 	int			    nSchedClass; // job event, may not need it once SLA is decided
 	int 			nTasks;
-	double			fTotalCPU;
-	double 			fTotalMem;
+    int 			fTotalCPU;
+	int 			fTotalMem;
 	std::string 	sUser;      // job event
 	double 			fSLAParam1; // synthetic
 	double 			fSLAParam2; // synthetic

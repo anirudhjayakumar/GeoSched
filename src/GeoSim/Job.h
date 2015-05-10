@@ -42,7 +42,7 @@ private:
 class Job {
 public:
     Job();
-	Job(INT64_, INT64_, int,  int , double , double);
+	Job(INT64_, INT64_, int,  int , int, int);
 	virtual ~Job();
 	INT64_ getJobID();
     int setNodeID(int n);
@@ -53,7 +53,7 @@ public:
 	std::vector<Task*> getTasks();
 	INT64_ GetTotalRunTime();
     // add required method
-	double   nCores;
+	int   nCores;
 private:
 	std::vector<Task*> vTasks;
 	INT64_ nTotalRunTime;
