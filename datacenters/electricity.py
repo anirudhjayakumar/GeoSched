@@ -10,7 +10,7 @@ import calendar
 
 cwd=os.getcwd()
 
-address="/Users/harshitdokania/Desktop/cs525/geosched/datacenters/electricity"
+address="/Users/anirudhnair/code/GeoSched/datacenters/electricity"
 
 
 
